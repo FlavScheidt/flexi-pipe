@@ -22,11 +22,41 @@ var bucket = "test"
 var url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
 var token = "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
 
+// type pointData struct {
+// 	execID		uint32,		
+// 	measurement string,
+// 	timestamp	time.Time,
+// 	data 		map[string]string,
+// 	fields      map[string]interface{}
+// }
+
+// func writeDB(pt pointData, writeClient influxdb2.Client)
+// {
+// 	point := influxdb2.NewPoint(
+// 			pt.measurement,
+// 			map[string]string{
+// 			"peerID": data["peerID"].(string),
+// 			},
+//  			map[string]interface{}{
+// 				 	"sendTo": join["sendTo"].(string),
+// 				 	"type": "messages",
+// 				 },
+// 			timestamp)
+// 	writeAPI.WritePoint(point)
+// }
+
 func writeTopic(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
     writeAPI := writeClient.WriteAPI(org, bucket)
 
 	j := data[measurement]
 	join := j.(map[string]interface{})
+
+	// pointData.measurement = measurement
+	// pointData.timestamp = timestamp
+	// pointData.data = map[string]string{
+	// 			"peerID": data["peerID"].(string),
+	// 		}
+	// pointData.fields = 
 
 	point := influxdb2.NewPoint(
 			measurement,
@@ -402,8 +432,6 @@ func loadTraces() {
             }
             log.Fatal(err)
         }
-
-        // log.Printf("got %+v", data)
 
         //TimeStamp
         tm := data["timestamp"].(float64)
