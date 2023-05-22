@@ -19,8 +19,6 @@ import (
 
 var org = "XRPL Project"
 var bucket = "test"
-var url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
-var token = "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
 
 // type pointData struct {
 // 	execID		uint32,		
