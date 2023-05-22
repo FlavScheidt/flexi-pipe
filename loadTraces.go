@@ -8,6 +8,7 @@ import (
   	"time"
   	"log"
   	"io"
+  	// "reflect"
   	// "encoding/json"
   	// "go-ndjson"
 
@@ -16,17 +17,361 @@ import (
   	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
+var org = "XRPL Project"
+var bucket = "test"
+var url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
+var token = "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
 
+func writeTopic(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
+    writeAPI := writeClient.WriteAPI(org, bucket)
+
+	j := data[measurement]
+	join := j.(map[string]interface{})
+
+	point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+				"peerID": data["peerID"].(string),
+			},
+			 map[string]interface{}{
+			 	"topic": join["topic"].(string),
+			 },
+			timestamp)
+		writeAPI.WritePoint(point)
+		// writeAPI.Flush()
+}
+
+func writePublishMessage(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) {
+	writeAPI := writeClient.WriteAPI(org, bucket)
+
+	j := data[measurement]
+	join := j.(map[string]interface{})
+
+	point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+				"peerID": data["peerID"].(string),
+			},
+			 map[string]interface{}{
+			 	"topic": join["topic"].(string),
+			 	"messageID": join["messageID"].(string),
+			 },
+			timestamp)
+		writeAPI.WritePoint(point)
+		// writeAPI.Flush()
+}
+func writeMessage(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
+    writeAPI := writeClient.WriteAPI(org, bucket)
+
+	j := data[measurement]
+	join := j.(map[string]interface{})
+
+	point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+				"peerID": data["peerID"].(string),
+			},
+ 			map[string]interface{}{
+				 	"topic": join["topic"].(string),
+				 	"messageID": join["messageID"].(string),
+				 	"receivedFrom": join["receivedFrom"].(string),
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
+		// writeAPI.Flush()
+}
+
+func writeRPC(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) {
+	writeAPI := writeClient.WriteAPI(org, bucket)
+
+	//GeneralPoint
+	j := data[measurement]
+	join := j.(map[string]interface{})
+	// writeAPI.Flush()
+
+	meta := join["meta"].(map[string]interface{})
+	//Read meta
+	if _, ok := meta["messages"]; ok {
+		m := meta["messages"]
+		mt := m.([]interface{})
+
+		point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+			"peerID": data["peerID"].(string),
+			},
+ 			map[string]interface{}{
+				 	"receivedFrom": join["receivedFrom"].(string),
+				 	"type": "messages",
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
+
+		for _, mess := range mt {
+			message := mess.(map[string]interface{})
+			point = influxdb2.NewPoint(
+				"RPCmessages",
+				map[string]string{
+					"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 "topic": message["topic"].(string),
+					 "messageID": message["messageID"].(string),
+					},
+				timestamp)
+		}
+		writeAPI.WritePoint(point)
+		// writeAPI.Flush()
+	} else if _, ok := meta["control"]; ok {
+		c := meta["control"]
+		control := c.(map[string]interface{})
+
+		if _, ok := control["ihave"]; ok {
+			ihave := control["ihave"].([]interface{})
+
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+	 			map[string]interface{}{
+					 	"receivedFrom": join["receivedFrom"].(string),
+					 	"type": "ihave",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+			
+			for _, mess := range ihave {
+				message := mess.(map[string]interface{})
+				ids := message["messageIDs"].([]interface{})
+
+				nMessages := len(ids)
+				// log.Println(nMessages)
+
+				point := influxdb2.NewPoint(
+					"ihave",
+					map[string]string{
+						"peerID": data["peerID"].(string),
+					},
+		 			map[string]interface{}{
+						 	"topic": message["topic"].(string),
+						 	"messages": nMessages,
+						 },
+					timestamp)
+				writeAPI.WritePoint(point)
+				// writeAPI.Flush()
+			}
+		} else if _, ok := control["graft"]; ok {
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 	"receivedFrom": join["receivedFrom"].(string),
+					 	"type": "graft",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+		} else if _, ok := control["prune"]; ok {
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 	"receivedFrom": join["receivedFrom"].(string),
+					 	"type": "prune",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+		} else {
+			log.Println("Format not recognized:")
+			log.Printf("%+v\n", data)
+		}
+	} else if _, ok := meta["subscription"]; ok {
+		point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+			"peerID": data["peerID"].(string),
+			},
+	 		map[string]interface{}{
+				 	"receivedFrom": join["receivedFrom"].(string),
+				 	"type": "subscription",
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
+	} else {
+		log.Println("Format not recognized:")
+		log.Printf("%+v\n", data)
+	}
+}
+
+func writeSentRPC(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) {
+	writeAPI := writeClient.WriteAPI(org, bucket)
+
+	//GeneralPoint
+	j := data[measurement]
+	join := j.(map[string]interface{})
+	// writeAPI.Flush()
+
+	meta := join["meta"].(map[string]interface{})
+	//Read meta
+	if _, ok := meta["messages"]; ok {
+		m := meta["messages"]
+		mt := m.([]interface{})
+
+		point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+			"peerID": data["peerID"].(string),
+			},
+ 			map[string]interface{}{
+				 	"sendTo": join["sendTo"].(string),
+				 	"type": "messages",
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
+
+		for _, mess := range mt {
+			message := mess.(map[string]interface{})
+			point = influxdb2.NewPoint(
+				"RPCmessages",
+				map[string]string{
+					"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 "topic": message["topic"].(string),
+					 "messageID": message["messageID"].(string),
+					},
+				timestamp)
+		}
+		writeAPI.WritePoint(point)
+		// writeAPI.Flush()
+	} else if _, ok := meta["control"]; ok {
+		c := meta["control"]
+		control := c.(map[string]interface{})
+
+		if _, ok := control["iwant"]; ok {
+			iwant := control["iwant"].([]interface{})
+
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+	 			map[string]interface{}{
+					 	"sendTo": join["sendTo"].(string),
+					 	"type": "iwant",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+			
+			for _, mess := range iwant {
+				message := mess.(map[string]interface{})
+				ids := message["messageIDs"].([]interface{})
+
+				nMessages := len(ids)
+				// log.Println(nMessages)
+
+				point := influxdb2.NewPoint(
+					"iwant",
+					map[string]string{
+						"peerID": data["peerID"].(string),
+					},
+		 			map[string]interface{}{
+						 	"messages": nMessages,
+						 },
+					timestamp)
+				writeAPI.WritePoint(point)
+				// writeAPI.Flush()
+			}
+		} else if _, ok := control["ihave"]; ok {
+			ihave := control["ihave"].([]interface{})
+
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+	 			map[string]interface{}{
+					 	"sendTo": join["sendTo"].(string),
+					 	"type": "ihave",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+			
+			for _, mess := range ihave {
+				message := mess.(map[string]interface{})
+				ids := message["messageIDs"].([]interface{})
+
+				nMessages := len(ids)
+				// log.Println(nMessages)
+
+				point := influxdb2.NewPoint(
+					"ihave",
+					map[string]string{
+						"peerID": data["peerID"].(string),
+					},
+		 			map[string]interface{}{
+						 	"topic": message["topic"].(string),
+						 	"messages": nMessages,
+						 },
+					timestamp)
+				writeAPI.WritePoint(point)
+				// writeAPI.Flush()
+			}	
+		} else if _, ok := control["graft"]; ok {
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 	"sendTo": join["sendTo"].(string),
+					 	"type": "graft",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+		} else if _, ok := control["prune"]; ok {
+			point := influxdb2.NewPoint(
+				measurement,
+				map[string]string{
+				"peerID": data["peerID"].(string),
+				},
+		 		map[string]interface{}{
+					 	"sendTo": join["sendTo"].(string),
+					 	"type": "prune",
+					 },
+				timestamp)
+			writeAPI.WritePoint(point)
+		} else {
+			log.Println("Format not recognized:")
+			log.Printf("%+v\n", data)
+		}
+	} else if _, ok := meta["subscription"]; ok {
+		point := influxdb2.NewPoint(
+			measurement,
+			map[string]string{
+			"peerID": data["peerID"].(string),
+			},
+	 		map[string]interface{}{
+				 	"sendTo": join["sendTo"].(string),
+				 	"type": "subscription",
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
+	} else {
+		log.Println("Format not recognized:")
+		log.Printf("%+v\n", data)
+	}
+}
 
 func loadTraces() {
     // Create write client
-    url := "https://eu-central-1-1.aws.cloud2.influxdata.com"
-    token := "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
     writeClient := influxdb2.NewClient(url, token)
 
     // Define write API
-    org := "XRPL Project"
-    bucket := "genericTest"
     writeAPI := writeClient.WriteAPI(org, bucket)
 
     // Get errors channel
@@ -58,6 +403,8 @@ func loadTraces() {
             log.Fatal(err)
         }
 
+        // log.Printf("got %+v", data)
+
         //TimeStamp
         tm := data["timestamp"].(float64)
         timestamp := time.Unix(0, int64(tm))
@@ -69,158 +416,41 @@ func loadTraces() {
 				"peerID": data["peerID"].(string),
 			},
 			 map[string]interface{}{
+			 	// "size": size,
 			 	"type": data["type"],
 			 },
 			timestamp)
 
 		writeAPI.WritePoint(point)
-		log.Printf("got %+v", data)
+		// writeAPI.Flush()
 
 		//Specific metrics
-		if data["type"].(float64) == 9 {
-			j := data["join"]
-			join := j.(map[string]interface{})
-
-			point := influxdb2.NewPoint(
-			"join",
-			map[string]string{
-				"peerID": data["peerID"].(string),
-			},
-			 map[string]interface{}{
-			 	"topic": join["topic"].(string),
-			 },
-			timestamp)
-			writeAPI.WritePoint(point)
+		switch tp := data["type"].(float64); tp {
+		case 0:
+			writePublishMessage("publishMessage", data, timestamp, writeClient)
+		case 11:
+			writeTopic("graft", data, timestamp, writeClient)
+		case 9:
+			log.Println("Message type join")
+		case 4:
+			log.Println("Message type addPeer")
+		case 5:
+			log.Println("Message type removePeer")
+		case 12:
+			writeTopic("prune", data, timestamp, writeClient)
+		case 3:
+			writeMessage("deliverMessage", data, timestamp, writeClient)
+		case 2:
+			writeMessage("duplicateMessage", data, timestamp, writeClient)
+		case 6:
+			writeRPC("recvRPC", data, timestamp, writeClient)
+		case 7:
+			writeSentRPC("sendRPC", data, timestamp, writeClient)
+		default:
+			log.Println("Format not recognized")
+			log.Printf("got %+v", data)
 		}
-
-
-
-		// if err := writeAPI.WritePoint(context.Background(), point); err != nil {
-		//    return fmt.Errorf("write API write point: %s", err)
-		// }
-
-		// time.Sleep(1 * time.Second) // separate points by 1 second
 	}
 	writeAPI.Flush()
 }
 
-
-// func traceJoin(data map[string]interface{}, writeAPI influxdb2.WriteAPI, timestamp time.Time) {
-// 	point := influxdb2.NewPoint(
-// 			"join",
-// 			map[string]string{
-// 				"peerID": data["peerID"].(string),
-// 			},
-// 			 map[string]interface{}{
-// 			 	"topic": data["join"],
-// 			 },
-// 			timestamp)
-// 	writeAPI.WritePoint(point)
-// }
-
-        // if data["type"] == 9 {
-
-        // }
-
-	// //Unmarshal and store in an interface (we don't know wich type of message we are dealing yet)
-	// var result interface{}
-	// err = json.Unmarshal(bytes, &result)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// data := result.(map[string]interface{})
-
-	// if data["type"].(float64) == 9 {
-	// 	fmt.Println("type 9")
-	// }
-
-	// Write data
- //    for key := range data {
- //      point := influxdb2.NewPointWithMeasurement("bytes").
- //        AddTag("peerID", data[key]["peerID"].(string)).
- //        AddTag("type", data[key]["type"].(string))
-
-	// writeAPI.WritePoint(context.Background(), point)
- //      // if err := writeAPI.WritePoint(context.Background(), point); err != nil {
- //      //   return fmt.Errorf("write API write point: %s", err)
- //      // }
-
- //      time.Sleep(1 * time.Second) // separate points by 1 second
- //    }
-
-
-// 	//Load generic message data
-// 	timestamp, err := time.Parse(
-//             "2006 02 Jan 03:04 PM -0700", 
-//             bytes["timestamp"].(string))
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	data := Message{}
-// 	data.tp =  	bytes["type"].(uint16)
-// 	data.peerId = bytes["peerID"].(string)
-
-// 	p := influxdb2.NewPoint(
-// 			"bytes",
-// 			map[string]string{
-// 				"peerID": data.peerId,
-// 			},
-// 			 map[uint16]interface{ 
-// 			 	"type": data.tp,
-// 			},
-// 			timestamp)
-
-// 	client := influxdb2.NewClient(url, token)
-// 	writer := client.WriteAPI(org, bucket)
-// 	writer.WritePoint(p)
-// 	client.Close()
-
-// }
-
-
-// func unMarshalUnstructured(fileName string)
-// {
-
-// 	bytes, err := os.ReadFile(fileName)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	var result interface{}
-// 	err = json.Unmarshal(bytes, &result)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	bytes := result.(map[string]interface{})
-
-// 	// for k, v := range bytes {
-// 	//     switch vv := v.(type) {
-// 	// 	    case string:
-// 	// 	        fmt.Println(k, "is string", vv)
-// 	// 	    case float64:
-// 	// 	        fmt.Println(k, "is float64", vv)
-// 	// 	    case []interface{}:
-// 	// 	        fmt.Println(k, "is an array:")
-// 	// 	        for i, u := range vv {
-// 	// 	            fmt.Println(i, u)
-// 	// 	        }
-// 	// 	    default:
-// 	// 	        fmt.Println(k, "is of a type I don't know how to handle")
-// 	// 	}
-//  //    }
-// }
-
-
-
-// 	// The object stored in the "birds" key is also stored as 
-// 	// a map[string]any type, and its type is asserted from
-// 	// the `any` type
-// 	msg := result["type"].(map[string]any)
-
-// 	for key, value := range birds {
-// 	  // Each value is an `any` type, that is type asserted as a string
-// 	  fmt.Println(key, value.(string))
-// }
