@@ -10,6 +10,7 @@ import (
     "log"
     "flag"
     "strings"
+    "os/exec"
 
 
 	"golang.org/x/crypto/ssh"
@@ -173,11 +174,6 @@ func main() {
 		    }
 		}
 
-	    // -----------------------------------------
-	    // 		Collect the logs
-	    // -----------------------------------------
-
-
 	} else if machine == "puppet" {
 
 		//Get parameters from command line
@@ -205,6 +201,15 @@ func main() {
 			log.Println("Stoping GossipSub")
 			go executeCmd(kill, hostname, config)
 		}
+
+
+	    // -----------------------------------------
+	    // 		Collect the logs
+	    // -----------------------------------------
+	    for _, hostname := range hosts {
+	    	copy := "scp "
+	    }
+
 
 	}
 	// time.Sleep(100 * time.Second)

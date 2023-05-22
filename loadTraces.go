@@ -17,8 +17,12 @@ import (
   	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-var org = "XRPL Project"
-var bucket = "test"
+var org = "SnT"
+var bucket = "gs"
+var url = "http://localhost:8086"
+// var url = "fia:8086"
+// var token = "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
+var token = "bC-1cYIzLpAGIDpN4c5mBKOponysXjWUDJFVgC5UB1AK9qFVt0-FPm2pAJllvbu3lUQMMuVK9PW21q24p7zjuw=="
 
 // type pointData struct {
 // 	execID		uint32,		
@@ -412,7 +416,7 @@ func loadTraces() {
 	}()
 
     //Load json
-	fileName := "/home/flav/gossip/flexi-pipe/trace.json"
+	fileName := "/root/flexi-pipe/trace.json"
 	bytes := jsons.NewFileReader(fileName)
 
 	//Read json
