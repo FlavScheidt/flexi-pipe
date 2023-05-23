@@ -51,7 +51,9 @@ func main() {
 	machineFlag := flag.String("machine", "master", "Is this machine a master or a puppet? Deafult is master")
   	experimentType := flag.String("type", "unl", "Type of experiment. Default is unl")
 
-  	runtime := flag.Duration("runtime", 900*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
+  	// runtime := flag.Duration("runtime", 900*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
+  	runtime := flag.Duration("runtime", 100*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
+
 
     d := flag.String("d", "8", "")
     dlo := flag.String("dlo", "6", "")
@@ -284,6 +286,7 @@ func main() {
 			        "gossipFactor": experiment.overlayParams.gossipFactor,
 			},
 		}
+		log.Println("point created")
 
 		writeDB(pt, writeClient)
 
