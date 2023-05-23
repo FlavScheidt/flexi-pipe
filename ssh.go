@@ -14,6 +14,7 @@ import (
 	// kh "golang.org/x/crypto/ssh/knownhosts"
  )
 
+
 func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {//, client *ssh.Client) string {
     
     var stdoutBuf bytes.Buffer

@@ -31,28 +31,28 @@ import (
 // }
 
 
-func executeCmd(cmd, hostname string, config *ssh.ClientConfig, client *ssh.Client) string {
-    client, err := ssh.Dial("tcp", hostname+":22", config)
-    if err != nil {
-        log.Fatalf("unable to connect: %v", err)
-    }
+// func executeCmd(cmd, hostname string, config *ssh.ClientConfig, client *ssh.Client) string {
+//     client, err := ssh.Dial("tcp", hostname+":22", config)
+//     if err != nil {
+//         log.Fatalf("unable to connect: %v", err)
+//     }
 
-    defer client.Close()
-    ss, err := client.NewSession()
-    if err != nil {
-        log.Fatal("unable to create SSH session: ", err)
-    }
-    defer ss.Close()
+//     defer client.Close()
+//     ss, err := client.NewSession()
+//     if err != nil {
+//         log.Fatal("unable to create SSH session: ", err)
+//     }
+//     defer ss.Close()
 
-    // Creating the buffer which will hold the remotly executed command's output.
-    var stdoutBuf bytes.Buffer
-    ss.Stdout = &stdoutBuf
-    ss.Run(cmd)
-    // Let's print out the result of command.
-    // fmt.Println(stdoutBuf.String())
+//     // Creating the buffer which will hold the remotly executed command's output.
+//     var stdoutBuf bytes.Buffer
+//     ss.Stdout = &stdoutBuf
+//     ss.Run(cmd)
+//     // Let's print out the result of command.
+//     // fmt.Println(stdoutBuf.String())
 
-    return hostname + ": " + stdoutBuf.String()
-}
+//     return hostname + ": " + stdoutBuf.String()
+// }
 
 func runParallel(cmd string, hosts []string, config *ssh.ClientConfig, duration time.Duration) {
 

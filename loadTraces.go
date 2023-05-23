@@ -26,11 +26,12 @@ type pointData struct {
 }
 
 func writeDB(pt pointData, writeClient influxdb2.Client) {
+	writeAPI := writeClient.WriteAPI(org, bucket)
 	point := influxdb2.NewPoint(
 			pt.measurement,
 			pt.tags,
  			pt.fields,
-			timestamp)
+			pt.timestamp)
 	writeAPI.WritePoint(point)
 }
 
@@ -403,6 +404,7 @@ func loadTraces(hostname string,  writeClient influxdb2.Client) {
 	// 	}
 	// }()
 	var pt pointData
+	 writeAPI := writeClient.WriteAPI(org, bucket)
 
     //Load json
 	fileName := TRACES_PATH+"/trace_"+hostname+".json"
@@ -430,23 +432,28 @@ func loadTraces(hostname string,  writeClient influxdb2.Client) {
         pt.timestamp = timestamp
 
         //Tags
-        pt.tags := map[string]string {
+        pt.tags = map[string]string {
         	"peerID": data["peerID"].(string),
 			"node": hostname,
         }
 
         //Fields
-        pt.fields := map[string]interface{}{
+        pt.fields = map[string]interface{}{
 			 	// "size": size,
 			 	"type": data["type"],
 		}
 
+		//Measurement
+		pt.measurement = "message"
+
+		writeDB(pt, writeClient)
+
        	// Write data of the general message
-       	point := influxdb2.NewPoint(
-			"message",
-			pt.tags,
-			pt.fields,
-			pt.timestamp)
+   //     	point := influxdb2.NewPoint(
+			// "message",
+			// pt.tags,
+			// pt.fields,
+			// pt.timestamp)
 		// point := influxdb2.NewPoint(
 		// 	"message",
 		// 	map[string]string{
@@ -459,7 +466,7 @@ func loadTraces(hostname string,  writeClient influxdb2.Client) {
 		// 	},
 		// 	pt.timestamp)
 
-		writeAPI.WritePoint(point)
+		// writeAPI.WritePoint(point)
 		// writeAPI.Flush()
 
 		//Specific metrics

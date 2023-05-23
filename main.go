@@ -73,7 +73,7 @@ func main() {
     //			Just the go logging feature, nothing special
     // -----------------------------------------
     currentTime := time.Now()
-    LOG_FILE := "./log_"+currentTime.Format("01022006_15_04_05")+"_"+experiment+".out"
+    LOG_FILE := "./log_"+currentTime.Format("01022006_15_04_05")+"_"+topology+".out"
     // open log file
     logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
@@ -176,7 +176,7 @@ func main() {
 
 		    //Connect to puppet server and start GossipSub
 		    log.Println("Connecting to ", PUPPET)
-    		go runPuppet(experiment, config, timeout, param)
+    		go runPuppet(topology, config, timeout, param)
 
     		//Start rippled monitor
     		go rippledMonitor(hosts, config, runTime)
