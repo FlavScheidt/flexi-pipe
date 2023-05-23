@@ -7,12 +7,50 @@ import (
     // "io/ioutil"
     // "time"
     "log"
-    // "os"
 
+    scp "github.com/bramvdbogaerde/go-scp"
+    "github.com/bramvdbogaerde/go-scp/auth"
+    "os"
+    "context"
 
 	"golang.org/x/crypto/ssh"
 	// kh "golang.org/x/crypto/ssh/knownhosts"
  )
+
+func scpTrace(hostname string) {
+    clientConfig, _ := auth.PrivateKey("root", "/root/.ssh/id_rsa", ssh.InsecureIgnoreHostKey())
+
+    // For other authentication methods see ssh.ClientConfig and ssh.AuthMethod
+
+    // Create a new SCP client
+    client := scp.NewClient(hostname+":22", &clientConfig)
+
+    // Connect to the remote server
+    err := client.Connect()
+    if err != nil {
+        log.Println("Couldn't establish a connection to the remote server ", err)
+        return
+    }
+
+    // Open a file
+    f, _ := os.Open(TRACES_PATH+"traces_"+hostname+".json")
+
+    // Close client connection after the file has been copied
+    defer client.Close()
+
+    // Close the file after it has been copied
+    defer f.Close()
+
+    // Finaly, copy the file over
+    // Usage: CopyFromFile(context, file, remotePath, permission)
+
+    // the context can be adjusted to provide time-outs or inherit from other contexts if this is embedded in a larger application.
+    err = client.CopyFromFile(context.Background(), *f, PATH+"trace.json", "0655")
+
+    if err != nil {
+        log.Println("Error while copying file ", err)
+    }
+}
 
 
 func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {//, client *ssh.Client) string {
