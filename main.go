@@ -240,7 +240,7 @@ func main() {
 		// Create go proc for reading and logging errors
 		go func() {
 			for err := range errorsCh {
-				fmt.Printf("write error: %s\n", err.Error())
+				log.Printf("write error: %s\n", err.Error())
 			}
 		}()
 
