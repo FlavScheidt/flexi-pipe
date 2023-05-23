@@ -9,11 +9,19 @@ import (
     "time"
  )
 
- type HeartbeatParams struct {
-    InitialDelay time.Duration
-    Interval     time.Duration
-}
+ type Experiment struct {
+    topology            string,
+    start               time.Time,
+    end                 time.Time,
+    overlayParams       OverlayParams,
+    // heartbeatParams     HeartbeatParams,
+    runtime             uint64
+ }
 
+//  type HeartbeatParams struct {
+//     InitialDelay time.Duration
+//     Interval     time.Duration
+// }
 
 type OverlayParams struct {
     d            string

@@ -17,35 +17,23 @@ import (
   	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-var org = "SnT"
-var bucket = "gs"
-var url = "http://localhost:8086"
-// var url = "fia:8086"
-// var token = "-rwAjn0_D1heOSIfReDrjPbnR7m_wgAg_O_RWvcnZ7qYI-jngsa-jlhk1qw2BlCullTfRuZurAqRQywV6klR_g=="
-var token = "bC-1cYIzLpAGIDpN4c5mBKOponysXjWUDJFVgC5UB1AK9qFVt0-FPm2pAJllvbu3lUQMMuVK9PW21q24p7zjuw=="
 
-// type pointData struct {
-// 	execID		uint32,		
-// 	measurement string,
-// 	timestamp	time.Time,
-// 	data 		map[string]string,
-// 	fields      map[string]interface{}
-// }
+type pointData struct {	
+	measurement string,
+	timestamp	time.Time,
+	tags 		map[string]string,
+	fields      map[string]interface{}
+}
 
-// func writeDB(pt pointData, writeClient influxdb2.Client)
-// {
-// 	point := influxdb2.NewPoint(
-// 			pt.measurement,
-// 			map[string]string{
-// 			"peerID": data["peerID"].(string),
-// 			},
-//  			map[string]interface{}{
-// 				 	"sendTo": join["sendTo"].(string),
-// 				 	"type": "messages",
-// 				 },
-// 			timestamp)
-// 	writeAPI.WritePoint(point)
-// }
+func writeDB(pt pointData, writeClient influxdb2.Client)
+{
+	point := influxdb2.NewPoint(
+			pt.measurement,
+			pt.tags,
+ 			pt.fields,
+			timestamp)
+	writeAPI.WritePoint(point)
+}
 
 func writeTopic(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
     writeAPI := writeClient.WriteAPI(org, bucket)
@@ -92,6 +80,7 @@ func writePublishMessage(measurement string, data map[string]interface{}, timest
 		writeAPI.WritePoint(point)
 		// writeAPI.Flush()
 }
+
 func writeMessage(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
     writeAPI := writeClient.WriteAPI(org, bucket)
 
@@ -399,24 +388,25 @@ func writeSentRPC(measurement string, data map[string]interface{}, timestamp tim
 	}
 }
 
-func loadTraces() {
-    // Create write client
-    writeClient := influxdb2.NewClient(url, token)
+func loadTraces(hostname string,  writeClient influxdb2.Client) {
+ //    // Create write client
+ //    writeClient := influxdb2.NewClient(url, token)
 
-    // Define write API
-    writeAPI := writeClient.WriteAPI(org, bucket)
+ //    // Define write API
+ //    writeAPI := writeClient.WriteAPI(org, bucket)
 
-    // Get errors channel
-	errorsCh := writeAPI.Errors()
-	// Create go proc for reading and logging errors
-	go func() {
-		for err := range errorsCh {
-			fmt.Printf("write error: %s\n", err.Error())
-		}
-	}()
+ //    // Get errors channel
+	// errorsCh := writeAPI.Errors()
+	// // Create go proc for reading and logging errors
+	// go func() {
+	// 	for err := range errorsCh {
+	// 		fmt.Printf("write error: %s\n", err.Error())
+	// 	}
+	// }()
+	var pt pointData
 
     //Load json
-	fileName := "/root/flexi-pipe/trace.json"
+	fileName := TRACES_PATH+"/trace_"+hostname+".json"
 	bytes := jsons.NewFileReader(fileName)
 
 	//Read json
@@ -438,18 +428,37 @@ func loadTraces() {
         //TimeStamp
         tm := data["timestamp"].(float64)
         timestamp := time.Unix(0, int64(tm))
+        pt.timestamp = timestamp
 
-       	// Write data of the general message
-		point := influxdb2.NewPoint(
-			"message",
-			map[string]string{
-				"peerID": data["peerID"].(string),
-			},
-			 map[string]interface{}{
+        //Tags
+        pt.tags := map[string]string {
+        	"peerID": data["peerID"].(string),
+			"node": hostname,
+        }
+
+        //Fields
+        pt.fields := map[string]interface{}{
 			 	// "size": size,
 			 	"type": data["type"],
-			 },
-			timestamp)
+		}
+
+       	// Write data of the general message
+       	point := influxdb2.NewPoint(
+			"message",
+			pt.tags,
+			pt.fields,
+			pt.timestamp)
+		// point := influxdb2.NewPoint(
+		// 	"message",
+		// 	map[string]string{
+		// 		"peerID": data["peerID"].(string),
+		// 		"node": hostname,
+		// 	},
+		// 	map[string]interface{}{
+		// 	 	// "size": size,
+		// 	 	"type": data["type"],
+		// 	},
+		// 	pt.timestamp)
 
 		writeAPI.WritePoint(point)
 		// writeAPI.Flush()

@@ -21,16 +21,19 @@ import (
 // -----------------------------------------
 //      Set paths
 // -----------------------------------------
-var PATH="/root/rippledTools/"
+var PATH="/root/felix-pipe/"
+var TOOLS_PATH=PATH+"rippledTools/"
 var RIPPLED_PATH="/opt/local/bin/"
 var RIPPLED_CONFIG="/root/config/rippled.cfg"
 var RIPPLED_QUORUM="15"
 
 var GOSSIPSUB_PATH="/root/gossipGoSnt/"
 var GOPATH="/usr/local/go/bin/"
-var GOSSIPSUB_PARAMETERS=PATH+"/Orchestrator/parameters.csv"
+var GOSSIPSUB_PARAMETERS=PATH+"config/parameters.csv"
 
-var NODES_CONFIG=PATH+"/ConfigCluster/ClusterConfig.csv"
+var NODES_CONFIG=PATH+"rippledTools/ConfigCluster/ClusterConfig.csv"
+
+var TRACES_PATH=PATH+"/traces/"
 
 var PUPPET="liberty"
 
@@ -40,6 +43,9 @@ func main() {
 	//------------------------------------------
 	//	Proccess flags
 	//------------------------------------------
+	// Important note: we are actually reading the parameters for gs from a file
+	// However, we need to also be able to read them from command line
+	//because we will use the commandline to start the puppet
 	machineFlag := flag.String("machine", "master", "Is this machine a master or a puppet? Deafult is master")
   	experimentType := flag.String("type", "unl", "Type of experiment. Default is unl")
 
@@ -59,7 +65,7 @@ func main() {
     flag.Parse()
 
 	machine := strings.ToLower(*machineFlag)
-	experiment := strings.ToLower(*experimentType)
+	topology := strings.ToLower(*experimentType)
 	runTime := *runtime
 
     // -----------------------------------------
@@ -133,14 +139,24 @@ func main() {
 	    }
 
 	    fmt.Printf("%+v\n", paramsList)
+
 		// -----------------------------------------
-	    // 		Clean logs
+	    // 		Clean logs and rippled databases
 	    // -----------------------------------------
+	   	cd := "cd "+TOOLS_PATH+"/NewRun/"
+	   	clean := "./prepareNewRun.sh"
+
+	    cmd := exec.Command(cd, clean)
+		stdout, err := cmd.Output()
+		if err != nil {
+		    fmt.Println(err.Error())
+		}
+		// Print the output
+		log.Println("Cleaning logs and databases: "+string(stdout))
 
 	    // -----------------------------------------
-	    // 		Generate config for experiment type
+	    // 		Generate config for the chosen topology
 	    // -----------------------------------------
-
 
 	    // -----------------------------------------
 	    // 		Start rippled
@@ -187,6 +203,14 @@ func main() {
 	        gossipFactor: *gossipFactor,
 	    }
 
+	    // Create struct with experiment info for the database
+	    experiment := Experiment{
+	    	topology:		topology,
+	    	runtime:		runTime,
+	    	overlayParams:	param,
+	    	start:			time.UnixNano()
+	    }
+
 		//Connect and start gossipsub
 		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+experiment+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
 		for _, hostname := range hosts {
@@ -202,12 +226,62 @@ func main() {
 			go executeCmd(kill, hostname, config)
 		}
 
+		experiment.end = time.UnixNano()
+
+	    // Create write client
+	    writeClient := influxdb2.NewClient(url, token)
+	    // Define write API
+	    writeAPI := writeClient.WriteAPI(org, bucket)
+
+	    // Get errors channel
+		errorsCh := writeAPI.Errors()
+		// Create go proc for reading and logging errors
+		go func() {
+			for err := range errorsCh {
+				fmt.Printf("write error: %s\n", err.Error())
+			}
+		}()
+
+		//Timestamp is the begning of the execution
+		timestamp := time.Unix(0, int64(experiment.timestamp))
+		point := influxdb2.NewPoint(
+			"experiment",
+			map[string]string{
+			"topology": experiment.topology,
+			},
+	 		map[string]interface{}{
+	 				"endTime": 		experiment.end,
+				 	"runtime": 		experiment.runtime,
+				 	"d": 			experiment.overlayParams.d,
+				 	"dlo":          experiment.overlayParams.dlo,
+			        "dhi":          experiment.overlayParams.dhi,
+			        "dscore":       experiment.overlayParams.dscore,
+			        "dlazy":        experiment.overlayParams.dlazy,
+			        "dout":         experiment.overlayParams.dout,
+			        "gossipFactor": experiment.overlayParams.gossipFactor,
+				 },
+			timestamp)
+		writeAPI.WritePoint(point)
 
 	    // -----------------------------------------
-	    // 		Collect the logs
+	    // 		Load traces into db
 	    // -----------------------------------------
 	    for _, hostname := range hosts {
-	    	copy := "scp "
+	    	//copy traces
+	    	copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"/trace.json "+TRACES_PATH+"/trace_"+hostname+".json"
+
+	    	cmd := exec.Command(copy)
+		    stdout, err := cmd.Output()
+		    if err != nil {
+		        fmt.Println(err.Error())
+		        return
+		    }
+		    // Print the output
+		    log.Println("Copying trace from "+hostname+": "+string(stdout))
+
+
+		    //load traces
+		    go loadTraces(hostname, writeClient)
 	    }
 
 

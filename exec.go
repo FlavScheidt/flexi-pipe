@@ -14,21 +14,21 @@ import (
 	// kh "golang.org/x/crypto/ssh/knownhosts"
  )
 
-type HeartbeatParams struct {
-    InitialDelay time.Duration
-    Interval     time.Duration
-}
+// type HeartbeatParams struct {
+//     InitialDelay time.Duration
+//     Interval     time.Duration
+// }
 
 
-type OverlayParams struct {
-    d            string
-    dlo          string
-    dhi          string
-    dscore       string
-    dlazy        string
-    dout         string
-    gossipFactor string
-}
+// type OverlayParams struct {
+//     d            string
+//     dlo          string
+//     dhi          string
+//     dscore       string
+//     dlazy        string
+//     dout         string
+//     gossipFactor string
+// }
 
 
 func executeCmd(cmd, hostname string, config *ssh.ClientConfig, client *ssh.Client) string {
