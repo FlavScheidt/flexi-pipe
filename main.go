@@ -23,7 +23,7 @@ import (
 // -----------------------------------------
 //      Set paths
 // -----------------------------------------
-var PATH="/root/felix-pipe/"
+var PATH="/root/flexi-pipe/"
 var TOOLS_PATH=PATH+"rippledTools/"
 var RIPPLED_PATH="/opt/local/bin/"
 var RIPPLED_CONFIG="/root/config/rippled.cfg"
