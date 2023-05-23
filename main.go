@@ -11,7 +11,6 @@ import (
     "flag"
     "strings"
     "os/exec"
-    "time"
 
 
 	"golang.org/x/crypto/ssh"
@@ -209,13 +208,13 @@ func main() {
 	    // Create struct with experiment info for the database
 	    experiment := Experiment{
 	    	topology:		topology,
-	    	runtime:		runTime,
+	    	runtime:		uint64(runTime),
 	    	overlayParams:	param,
-	    	start:			time.UnixNano(),
+	    	start:			time.Now(),
 	    }
 
 		//Connect and start gossipsub
-		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+experiment+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
+		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
 		for _, hostname := range hosts {
 			log.Println("Starting GossipSub")
 			go executeCmd(gossipsub, hostname, config)
@@ -229,7 +228,7 @@ func main() {
 			go executeCmd(kill, hostname, config)
 		}
 
-		experiment.end = time.UnixNano()
+		experiment.end = time.Now()
 
 	    // Create write client
 	    writeClient := influxdb2.NewClient(url, token)
@@ -268,7 +267,7 @@ func main() {
 
 
 		pt := pointData{
-			timestamp : time.Unix(0, int64(experiment.timestamp)),
+			timestamp : experiment.start,
 			measurement: "message",
 			tags: map[string]string{
 				"topology": experiment.topology,
