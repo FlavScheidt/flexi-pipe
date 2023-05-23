@@ -10,10 +10,10 @@ import (
  )
 
  type Experiment struct {
-    topology            string,
-    start               time.Time,
-    end                 time.Time,
-    overlayParams       OverlayParams,
+    topology            string
+    start               time.Time
+    end                 time.Time
+    overlayParams       OverlayParams
     // heartbeatParams     HeartbeatParams,
     runtime             uint64
  }

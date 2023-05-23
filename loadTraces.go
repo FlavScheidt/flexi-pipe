@@ -19,14 +19,13 @@ import (
 
 
 type pointData struct {	
-	measurement string,
-	timestamp	time.Time,
-	tags 		map[string]string,
+	measurement string
+	timestamp	time.Time
+	tags 		map[string]string
 	fields      map[string]interface{}
 }
 
-func writeDB(pt pointData, writeClient influxdb2.Client)
-{
+func writeDB(pt pointData, writeClient influxdb2.Client) {
 	point := influxdb2.NewPoint(
 			pt.measurement,
 			pt.tags,
