@@ -181,7 +181,7 @@ func main() {
     		go runPuppet(topology, config, timeout, param)
 
     		//Start rippled monitor
-    		go rippledMonitor(hosts, config, runTime)
+    		// go rippledMonitor(hosts, config, runTime)
 
     		time.Sleep(runTime)
 

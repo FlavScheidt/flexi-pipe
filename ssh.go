@@ -2,7 +2,7 @@ package main
 
 import (
     "bytes"
-    // "fmt"
+    "fmt"
     // "io"
     // "io/ioutil"
     // "time"
@@ -39,7 +39,7 @@ func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {/
     ss.Run(cmd)
 
     // Let's print out the result of command.
-    // fmt.Println(stdoutBuf.String())
+    fmt.Println(stdoutBuf.String())
 
     return hostname + ": " + stdoutBuf.String()
 }
