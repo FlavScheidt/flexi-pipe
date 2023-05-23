@@ -208,7 +208,7 @@ func main() {
 	    	topology:		topology,
 	    	runtime:		runTime,
 	    	overlayParams:	param,
-	    	start:			time.UnixNano()
+	    	start:			time.UnixNano(),
 	    }
 
 		//Connect and start gossipsub
