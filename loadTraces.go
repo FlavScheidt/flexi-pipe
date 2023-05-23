@@ -5,35 +5,35 @@ import (
 	// // "context"
  //  	"fmt"
  //  	// "os"
- //  	"time"
+  	"time"
  //  	"log"
  //  	"io"
  //  	// "reflect"
  //  	// "encoding/json"
  //  	// "go-ndjson"
 
- //  	"github.com/bfontaine/jsons"
- //  	// "github.com/influxdata/influxdb-client-go/v2/api/write"
- //  	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+  	// "github.com/bfontaine/jsons"
+  	// "github.com/influxdata/influxdb-client-go/v2/api/write"
+  	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 
-// type pointData struct {	
-// 	measurement string
-// 	timestamp	time.Time
-// 	tags 		map[string]string
-// 	fields      map[string]interface{}
-// }
+type pointData struct {	
+	measurement string
+	timestamp	time.Time
+	tags 		map[string]string
+	fields      map[string]interface{}
+}
 
-// func writeDB(pt pointData, writeClient influxdb2.Client) {
-// 	writeAPI := writeClient.WriteAPI(org, bucket)
-// 	point := influxdb2.NewPoint(
-// 			pt.measurement,
-// 			pt.tags,
-//  			pt.fields,
-// 			pt.timestamp)
-// 	writeAPI.WritePoint(point)
-// }
+func writeDB(pt pointData, writeClient influxdb2.Client) {
+	writeAPI := writeClient.WriteAPI(org, bucket)
+	point := influxdb2.NewPoint(
+			pt.measurement,
+			pt.tags,
+ 			pt.fields,
+			pt.timestamp)
+	writeAPI.WritePoint(point)
+}
 
 // func writeTopic(measurement string, data map[string]interface{}, timestamp time.Time, writeClient influxdb2.Client) () {
 //     writeAPI := writeClient.WriteAPI(org, bucket)

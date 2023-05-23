@@ -246,13 +246,34 @@ func main() {
 		}()
 
 		//Timestamp is the begning of the execution
-		timestamp := time.Unix(0, int64(experiment.timestamp))
-		point := influxdb2.NewPoint(
-			"experiment",
-			map[string]string{
-			"topology": experiment.topology,
+		// timestamp := time.Unix(0, int64(experiment.timestamp))
+		// point := influxdb2.NewPoint(
+		// 	"experiment",
+		// 	map[string]string{
+		// 	"topology": experiment.topology,
+		// 	},
+	 // 		map[string]interface{}{
+	 // 				"endTime": 		experiment.end,
+		// 		 	"runtime": 		experiment.runtime,
+		// 		 	"d": 			experiment.overlayParams.d,
+		// 		 	"dlo":          experiment.overlayParams.dlo,
+		// 	        "dhi":          experiment.overlayParams.dhi,
+		// 	        "dscore":       experiment.overlayParams.dscore,
+		// 	        "dlazy":        experiment.overlayParams.dlazy,
+		// 	        "dout":         experiment.overlayParams.dout,
+		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
+		// 		 },
+		// 	timestamp)
+		// writeAPI.WritePoint(point)
+
+
+		pt := pointData{
+			timestamp : time.Unix(0, int64(experiment.timestamp)),
+			measurement: "message",
+			tags: map[string]string{
+				"topology": experiment.topology,
 			},
-	 		map[string]interface{}{
+			fields: map[string]interface{}{
 	 				"endTime": 		experiment.end,
 				 	"runtime": 		experiment.runtime,
 				 	"d": 			experiment.overlayParams.d,
@@ -262,9 +283,30 @@ func main() {
 			        "dlazy":        experiment.overlayParams.dlazy,
 			        "dout":         experiment.overlayParams.dout,
 			        "gossipFactor": experiment.overlayParams.gossipFactor,
-				 },
-			timestamp)
-		writeAPI.WritePoint(point)
+			},
+		}
+
+		writeDB(pt, writeClient)
+
+		// timestamp := time.Unix(0, int64(experiment.timestamp))
+		// point := influxdb2.NewPoint(
+		// 	"experiment",
+		// 	map[string]string{
+		// 	"topology": experiment.topology,
+		// 	},
+	 // 		map[string]interface{}{
+	 // 				"endTime": 		experiment.end,
+		// 		 	"runtime": 		experiment.runtime,
+		// 		 	"d": 			experiment.overlayParams.d,
+		// 		 	"dlo":          experiment.overlayParams.dlo,
+		// 	        "dhi":          experiment.overlayParams.dhi,
+		// 	        "dscore":       experiment.overlayParams.dscore,
+		// 	        "dlazy":        experiment.overlayParams.dlazy,
+		// 	        "dout":         experiment.overlayParams.dout,
+		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
+		// 		 },
+		// 	timestamp)
+		// writeAPI.WritePoint(point)
 
 	    // -----------------------------------------
 	    // 		Load traces into db
