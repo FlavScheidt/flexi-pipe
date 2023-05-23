@@ -11,10 +11,13 @@ import (
     "flag"
     "strings"
     "os/exec"
+    "time"
 
 
 	"golang.org/x/crypto/ssh"
 	kh "golang.org/x/crypto/ssh/knownhosts"
+	
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
  )
 
 
@@ -281,7 +284,7 @@ func main() {
 
 
 		    //load traces
-		    go loadTraces(hostname, writeClient)
+		    // go loadTraces(hostname, writeClient)
 	    }
 
 
