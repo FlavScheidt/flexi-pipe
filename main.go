@@ -2,7 +2,7 @@ package main
 
 import (
     // "bytes"
-    "fmt"
+    // "log"
     "io"
     "io/ioutil"
     "os"
@@ -98,7 +98,7 @@ func main() {
         log.Panic(error)
     }
 
-    fmt.Printf("%+v\n", hosts)
+    log.Printf("%+v\n", hosts)
 
     // -----------------------------------------
     //		SSH config
@@ -142,7 +142,7 @@ func main() {
 	        log.Panic(error)
 	    }
 
-	    fmt.Printf("%+v\n", paramsList)
+	    log.Printf("%+v\n", paramsList)
 
 		// -----------------------------------------
 	    // 		Clean logs and rippled databases
@@ -153,7 +153,7 @@ func main() {
 	    cmd := exec.Command(cd, clean)
 		stdout, err := cmd.Output()
 		if err != nil {
-		    fmt.Println(err.Error())
+		    log.Println(err.Error())
 		}
 		// Print the output
 		log.Println("Cleaning logs and databases: "+string(stdout))
@@ -320,7 +320,7 @@ func main() {
 	    	cmd := exec.Command(copy)
 		    stdout, err := cmd.Output()
 		    if err != nil {
-		        fmt.Println(err.Error())
+		        log.Println(err.Error())
 		        return
 		    }
 		    // Print the output

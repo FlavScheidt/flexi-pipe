@@ -2,7 +2,7 @@ package main
 
 import (
     "bytes"
-    "fmt"
+    // "log"
     // "io"
     // "io/ioutil"
     // "time"
@@ -39,7 +39,7 @@ func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {/
     ss.Run(cmd)
 
     // Let's print out the result of command.
-    fmt.Println(stdoutBuf.String())
+    log.Println(stdoutBuf.String())
 
     return hostname + ": " + stdoutBuf.String()
 }
@@ -99,7 +99,7 @@ func remoteShell(commands []string, hostname string, config *ssh.ClientConfig,) 
     // }
 
     for _, cmd := range commands {
-        // _, err = fmt.Fprintf(stdin, "%s\n", cmd)
+        // _, err = log.Fprintf(stdin, "%s\n", cmd)
         _, err = stdinBuf.Write([]byte(cmd))
         if err != nil {
             log.Fatal(err)
