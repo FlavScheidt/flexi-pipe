@@ -35,7 +35,7 @@ var GOSSIPSUB_PARAMETERS=PATH+"config/parameters.csv"
 
 var NODES_CONFIG=PATH+"rippledTools/ConfigCluster/ClusterConfig.csv"
 
-var TRACES_PATH=PATH+"/traces/"
+var TRACES_PATH=PATH+"traces/"
 
 var PUPPET="liberty"
 
@@ -315,7 +315,7 @@ func main() {
 	    // -----------------------------------------
 	    for _, hostname := range hosts {
 	    	//copy traces
-	    	copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"/trace.json "+TRACES_PATH+"/trace_"+hostname+".json"
+	    	copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
 
 	    	cmd := exec.Command(copy)
 		    stdout, err := cmd.Output()
