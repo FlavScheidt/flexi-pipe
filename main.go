@@ -222,16 +222,16 @@ func main() {
 	    // Create write client
 	    writeClient := influxdb2.NewClient(url, token)
 	    // Define write API
-	    writeAPI := writeClient.WriteAPI(org, bucket)
+	 //    writeAPI := writeClient.WriteAPI(org, bucket)
 
-	    // Get errors channel
-		errorsCh := writeAPI.Errors()
-		// Create go proc for reading and logging errors
-		go func() {
-			for err := range errorsCh {
-				log.Printf("write error: %s\n", err.Error())
-			}
-		}()
+	 //    // Get errors channel
+		// errorsCh := writeAPI.Errors()
+		// // Create go proc for reading and logging errors
+		// go func() {
+		// 	for err := range errorsCh {
+		// 		log.Printf("write error: %s\n", err.Error())
+		// 	}
+		// }()
 
 		//Timestamp is the begning of the execution
 		// timestamp := time.Unix(0, int64(experiment.timestamp))
@@ -290,25 +290,25 @@ func main() {
 	    // -----------------------------------------
 	    // 		Load traces into db
 	    // -----------------------------------------
-	    for _, hostname := range hosts {
-	    	//copy traces
-	    	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
+	    // for _, hostname := range hosts {
+	    // 	//copy traces
+	    // 	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
 
-	    	// cmd := exec.Command(copy)
-		    // stdout, err := cmd.Output()
-		    // if err != nil {
-		    //     log.Println(err.Error())
-		    //     return
-		    // }
+	    // 	// cmd := exec.Command(copy)
+		   //  // stdout, err := cmd.Output()
+		   //  // if err != nil {
+		   //  //     log.Println(err.Error())
+		   //  //     return
+		   //  // }
 
-		    // Print the output
-		    log.Println("Copying trace from "+hostname)//+": "+string(stdout))
+		   //  // Print the output
+		   //  log.Println("Copying trace from "+hostname)//+": "+string(stdout))
 
-		    go scpTrace(hostname)
+		   //  go scpTrace(hostname)
 
-		    //load traces
-		    // go loadTraces(hostname, writeClient)
-	    }
+		   //  //load traces
+		   //  // go loadTraces(hostname, writeClient)
+	    // }
 
 	} else if machine == "puppet" {
 

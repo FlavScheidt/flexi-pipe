@@ -17,43 +17,46 @@ import (
 	// kh "golang.org/x/crypto/ssh/knownhosts"
  )
 
-func scpTrace(hostname string) {
-    clientConfig, _ := auth.PrivateKey("root", "/root/.ssh/id_rsa", ssh.InsecureIgnoreHostKey())
+// func scpTrace(hostname string, config *ssh.ClientConfig) {
+//     conn, err := ssh.Dial("tcp", hostname+":22", config)
+//     if err != nil {
+//         return err
+//     }
 
-    // For other authentication methods see ssh.ClientConfig and ssh.AuthMethod
+//     session, err := conn.NewSession()
+//     if err != nil {
+//         return err
+//     }
+//     defer session.Close()
 
-    // Create a new SCP client
-    client := scp.NewClient(hostname+":22", &clientConfig)
+//     r, err := session.StdoutPipe()
+//     if err != nil {
+//         return err
+//     }
 
-    // Connect to the remote server
-    err := client.Connect()
-    if err != nil {
-        log.Println("Couldn't establish a connection to the remote server ", err)
-        return
-    }
+//     // name := fmt.Sprintf("%s/backup_folder_%v.tar.gz", path, time.Now().Unix())
+//     name := GOSSIPSUB_PATH+"trace.json"
+//     file, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+//     if err != nil {
+//         return err
+//     }
+//     defer file.Close()
 
-    // Open a file
-    f, _ := os.Open(TRACES_PATH+"traces_"+hostname+".json")
+//     if err := session.Start(cmd); err != nil {
+//         return err
+//     }
 
-    // Close client connection after the file has been copied
-    defer client.Close()
+//     n, err := io.Copy(file, r)
+//     if err != nil {
+//         return err
+//     }
 
-    // Close the file after it has been copied
-    // defer f.Close()
+//     if err := session.Wait(); err != nil {
+//         return err
+//     }
 
-    // Finaly, copy the file over
-    // Usage: CopyFromFile(context, file, remotePath, permission)
-
-    // the context can be adjusted to provide time-outs or inherit from other contexts if this is embedded in a larger application.
-    err = client.CopyFromFile(context.Background(), *f, GOSSIPSUB_PATH+"trace.json", "0655")
-
-    if err != nil {
-        log.Println("Error while copying file ", err)
-    }
-    log.Println("Success")
-    client.Close()
-    f.Close()
-}
+//     return nil
+// }
 
 
 func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {//, client *ssh.Client) string {
