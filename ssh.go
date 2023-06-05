@@ -8,10 +8,10 @@ import (
     // "time"
     "log"
 
-    scp "github.com/bramvdbogaerde/go-scp"
-    "github.com/bramvdbogaerde/go-scp/auth"
-    "os"
-    "context"
+    // scp "github.com/bramvdbogaerde/go-scp"
+    // "github.com/bramvdbogaerde/go-scp/auth"
+    // "os"
+    // "context"
 
 	"golang.org/x/crypto/ssh"
 	// kh "golang.org/x/crypto/ssh/knownhosts"
