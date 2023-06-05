@@ -39,13 +39,13 @@ func scpTrace(hostname string) {
     defer client.Close()
 
     // Close the file after it has been copied
-    defer f.Close()
+    // defer f.Close()
 
     // Finaly, copy the file over
     // Usage: CopyFromFile(context, file, remotePath, permission)
 
     // the context can be adjusted to provide time-outs or inherit from other contexts if this is embedded in a larger application.
-    err = client.CopyFromFile(context.Background(), *f, PATH+"trace.json", "0655")
+    err = client.CopyFromFile(context.Background(), *f, GOSSIPSUB_PATH+"trace.json", "0655")
 
     if err != nil {
         log.Println("Error while copying file ", err)
@@ -74,9 +74,9 @@ func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {/
     ss.Setenv("GOPATH", GOPATH)
     
     // Creating the buffer which will hold the remotly executed command's output.
-    ss.Stdout = &stdoutBuf
-    ss.Stdout = os.Stdout
-    ss.Stderr = os.Stderr
+    // ss.Stdout = &stdoutBuf
+    // ss.Stdout = os.Stdout
+    // ss.Stderr = os.Stderr
     ss.Run(cmd)
 
     // Let's print out the result of command.
