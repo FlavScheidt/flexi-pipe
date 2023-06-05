@@ -292,14 +292,14 @@ func main() {
 		log.Println("point created")
 
 		// Clean traces
-		rm := "rm -rf "+TRACES_PATH+"trace_*"
+		// rm := "rm -rf "+TRACES_PATH+"trace_*"
 
-	    cmd := exec.Command(rm)
-		_, err := cmd.Output()
-		if err != nil {
-		    log.Println(err.Error())
-		    return
-		}
+	 //    cmd := exec.Command(rm)
+		// _, err := cmd.Output()
+		// if err != nil {
+		//     log.Println(err.Error())
+		//     return
+		// }
 
 
 	    // -----------------------------------------
