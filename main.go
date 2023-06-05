@@ -196,43 +196,8 @@ func main() {
 		    }
 		}
 
-	} else if machine == "puppet" {
-
-		//Get parameters from command line
-		param := OverlayParams{
-	        d:            *d,
-	        dlo:          *dlo,
-	        dhi:          *dhi,
-	        dscore:       *dscore,
-	        dlazy:        *dlazy,
-	        dout:         *dout,
-	        gossipFactor: *gossipFactor,
-	    }
-
-	    // Create struct with experiment info for the database
-	    experiment := Experiment{
-	    	topology:		topology,
-	    	runtime:		uint64(runTime),
-	    	overlayParams:	param,
-	    	start:			time.Now(),
-	    }
-
-		//Connect and start gossipsub
-		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
-		for _, hostname := range hosts {
-			log.Println("Starting GossipSub")
-			go executeCmd(gossipsub, hostname, config)
-		}
-
-		time.Sleep(runTime)
-
-		kill := "pkill -9 gossipGoSnt && pkill -9 rippled\n"
-		for _, hostname := range hosts {
-			log.Println("Stoping GossipSub")
-			go executeCmd(kill, hostname, config)
-		}
-
 		experiment.end = time.Now()
+		time.Sleep(30)
 
 	    // Create write client
 	    writeClient := influxdb2.NewClient(url, token)
@@ -325,6 +290,41 @@ func main() {
 		    // go loadTraces(hostname, writeClient)
 	    }
 
+	} else if machine == "puppet" {
+
+		//Get parameters from command line
+		param := OverlayParams{
+	        d:            *d,
+	        dlo:          *dlo,
+	        dhi:          *dhi,
+	        dscore:       *dscore,
+	        dlazy:        *dlazy,
+	        dout:         *dout,
+	        gossipFactor: *gossipFactor,
+	    }
+
+	    // Create struct with experiment info for the database
+	    experiment := Experiment{
+	    	topology:		topology,
+	    	runtime:		uint64(runTime),
+	    	overlayParams:	param,
+	    	start:			time.Now(),
+	    }
+
+		//Connect and start gossipsub
+		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
+		for _, hostname := range hosts {
+			log.Println("Starting GossipSub")
+			go executeCmd(gossipsub, hostname, config)
+		}
+
+		time.Sleep(runTime)
+
+		kill := "pkill -9 gossipGoSnt && pkill -9 rippled\n"
+		for _, hostname := range hosts {
+			log.Println("Stoping GossipSub")
+			go executeCmd(kill, hostname, config)
+		}
 
 	}
 	// time.Sleep(100 * time.Second)
