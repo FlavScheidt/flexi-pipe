@@ -149,7 +149,7 @@ func main() {
 		// -----------------------------------------
 	    // 		Clean logs and rippled databases
 	    // -----------------------------------------
-	   	cd := "cd "+TOOLS_PATH+"/NewRun/"
+	   	cd := "cd "+TOOLS_PATH+"NewRun"
 	   	clean := "./prepareNewRun.sh"
 
 	    cmd := exec.Command(cd, clean)
@@ -309,7 +309,7 @@ func main() {
 		    // Print the output
 		    log.Println("Copying trace from "+hostname)//+": "+string(stdout))
 
-		    scpTrace(hostname)
+		    go scpTrace(hostname)
 
 		    //load traces
 		    // go loadTraces(hostname, writeClient)
