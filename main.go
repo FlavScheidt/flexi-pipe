@@ -297,16 +297,19 @@ func main() {
 	    // -----------------------------------------
 	    for _, hostname := range hosts {
 	    	//copy traces
-	    	copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
+	    	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
 
-	    	cmd := exec.Command(copy)
-		    stdout, err := cmd.Output()
-		    if err != nil {
-		        log.Println(err.Error())
-		        return
-		    }
+	    	// cmd := exec.Command(copy)
+		    // stdout, err := cmd.Output()
+		    // if err != nil {
+		    //     log.Println(err.Error())
+		    //     return
+		    // }
+
+		    scpTrace(hostname)
+
 		    // Print the output
-		    log.Println("Copying trace from "+hostname+": "+string(stdout))
+		    log.Println("Copying trace from "+hostname)//+": "+string(stdout))
 
 
 		    //load traces
