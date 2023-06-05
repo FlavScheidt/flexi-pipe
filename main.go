@@ -288,9 +288,19 @@ func main() {
 			        "gossipFactor": experiment.overlayParams.gossipFactor,
 			},
 		}
+		writeDB(pt, writeClient)
 		log.Println("point created")
 
-		writeDB(pt, writeClient)
+		// Clean traces
+		rm := "rm -rf "+TRACES_PATH+"trace_*"
+
+	    cmd := exec.Command(rm)
+		_, err := cmd.Output()
+		if err != nil {
+		    log.Println(err.Error())
+		    return
+		}
+
 
 	    // -----------------------------------------
 	    // 		Load traces into db
