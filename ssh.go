@@ -51,6 +51,8 @@ func scpTrace(hostname string) {
         log.Println("Error while copying file ", err)
     }
     log.Println("Success")
+    client.Close()
+    f.Close()
 }
 
 
