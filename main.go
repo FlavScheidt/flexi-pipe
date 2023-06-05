@@ -72,6 +72,18 @@ func main() {
 	topology := strings.ToLower(*experimentType)
 	runTime := *runtime
 
+	//Get parameters from command line
+	param := OverlayParams{
+	        d:            *d,
+	        dlo:          *dlo,
+	        dhi:          *dhi,
+	        dscore:       *dscore,
+	        dlazy:        *dlazy,
+	        dout:         *dout,
+	        gossipFactor: *gossipFactor,
+	}
+
+
     // -----------------------------------------
     //      Set log file
     //			Just the go logging feature, nothing special
@@ -167,6 +179,14 @@ func main() {
 	    // -----------------------------------------
 	    // 		Start rippled
 	    // -----------------------------------------
+	    // Create struct with experiment info for the database
+	    experiment := Experiment{
+	    	topology:		topology,
+	    	runtime:		uint64(runTime),
+	    	overlayParams:	param,
+	    	start:			time.Now(),
+	    }
+
 	    start := []string{
 	    		"nohup " + RIPPLED_PATH+"rippled --conf="+RIPPLED_CONFIG+" --silent --net --quorum "+RIPPLED_QUORUM+" & \n",
 	    		"disown -h %1\n",
@@ -293,23 +313,15 @@ func main() {
 	} else if machine == "puppet" {
 
 		//Get parameters from command line
-		param := OverlayParams{
-	        d:            *d,
-	        dlo:          *dlo,
-	        dhi:          *dhi,
-	        dscore:       *dscore,
-	        dlazy:        *dlazy,
-	        dout:         *dout,
-	        gossipFactor: *gossipFactor,
-	    }
-
-	    // Create struct with experiment info for the database
-	    experiment := Experiment{
-	    	topology:		topology,
-	    	runtime:		uint64(runTime),
-	    	overlayParams:	param,
-	    	start:			time.Now(),
-	    }
+		// param := OverlayParams{
+	 //        d:            *d,
+	 //        dlo:          *dlo,
+	 //        dhi:          *dhi,
+	 //        dscore:       *dscore,
+	 //        dlazy:        *dlazy,
+	 //        dout:         *dout,
+	 //        gossipFactor: *gossipFactor,
+	 //    }
 
 		//Connect and start gossipsub
 		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
