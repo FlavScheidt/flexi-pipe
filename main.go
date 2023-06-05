@@ -306,11 +306,10 @@ func main() {
 		    //     return
 		    // }
 
-		    scpTrace(hostname)
-
 		    // Print the output
 		    log.Println("Copying trace from "+hostname)//+": "+string(stdout))
 
+		    scpTrace(hostname)
 
 		    //load traces
 		    // go loadTraces(hostname, writeClient)

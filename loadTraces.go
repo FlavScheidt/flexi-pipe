@@ -27,6 +27,16 @@ type pointData struct {
 
 func writeDB(pt pointData, writeClient influxdb2.Client) {
 	writeAPI := writeClient.WriteAPI(org, bucket)
+
+	// Get errors channel
+	errorsCh := writeAPI.Errors()
+	// Create go proc for reading and logging errors
+	go func() {
+		for err := range errorsCh {
+			log.Printf("write error: %s\n", err.Error())
+		}
+	}()
+
 	point := influxdb2.NewPoint(
 			pt.measurement,
 			pt.tags,

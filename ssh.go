@@ -50,6 +50,7 @@ func scpTrace(hostname string) {
     if err != nil {
         log.Println("Error while copying file ", err)
     }
+    log.Println("Success")
 }
 
 
