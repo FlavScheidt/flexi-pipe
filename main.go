@@ -75,7 +75,7 @@ func main() {
     //			Just the go logging feature, nothing special
     // -----------------------------------------
     currentTime := time.Now()
-    LOG_FILE := PATH+"logs/log_"+currentTime.Format("01022006_15_04_05")+"_"+topology+".out"
+    LOG_FILE := PATH+"log_"+currentTime.Format("01022006_15_04_05")+"_"+topology+".out"
     // open log file
     logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
