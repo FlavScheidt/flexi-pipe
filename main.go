@@ -73,15 +73,15 @@ func main() {
 	runTime := *runtime
 
 	//Get parameters from command line
-	param := OverlayParams{
-	        d:            *d,
-	        dlo:          *dlo,
-	        dhi:          *dhi,
-	        dscore:       *dscore,
-	        dlazy:        *dlazy,
-	        dout:         *dout,
-	        gossipFactor: *gossipFactor,
-	}
+	// param := OverlayParams{
+	//         d:            *d,
+	//         dlo:          *dlo,
+	//         dhi:          *dhi,
+	//         dscore:       *dscore,
+	//         dlazy:        *dlazy,
+	//         dout:         *dout,
+	//         gossipFactor: *gossipFactor,
+	// }
 
 
     // -----------------------------------------
@@ -179,19 +179,21 @@ func main() {
 	    // -----------------------------------------
 	    // 		Start rippled
 	    // -----------------------------------------
-	    // Create struct with experiment info for the database
-	    experiment := Experiment{
-	    	topology:		topology,
-	    	runtime:		uint64(runTime),
-	    	overlayParams:	param,
-	    	start:			time.Now(),
-	    }
+	    // // Create struct with experiment info for the database
+	    // experiment := Experiment{
+	    // 	topology:		topology,
+	    // 	runtime:		uint64(runTime),
+	    // 	overlayParams:	param,
+	    // 	start:			time.Now(),
+	    // }
 
 	    start := []string{
 	    		"nohup " + RIPPLED_PATH+"rippled --conf="+RIPPLED_CONFIG+" --silent --net --quorum "+RIPPLED_QUORUM+" & \n",
 	    		"disown -h %1\n",
 	    	}
    		stop := RIPPLED_PATH+"rippled --conf="+RIPPLED_CONFIG+" stop & \n"
+
+   		// experiment.start = time.Now()
 
 		for _, param := range paramsList {
 		    for _, hostname := range hosts {
@@ -214,6 +216,136 @@ func main() {
 		    	log.Println(hostname+" Stoping rippled")
 			    go executeCmd(stop, hostname, config)
 		    }
+		}
+
+		// experiment.end = time.Now()
+		// time.Sleep(30)
+
+	 //    // Create write client
+	 //    writeClient := influxdb2.NewClient(url, token)
+	 //    // Define write API
+	 // //    writeAPI := writeClient.WriteAPI(org, bucket)
+
+	 // //    // Get errors channel
+		// // errorsCh := writeAPI.Errors()
+		// // // Create go proc for reading and logging errors
+		// // go func() {
+		// // 	for err := range errorsCh {
+		// // 		log.Printf("write error: %s\n", err.Error())
+		// // 	}
+		// // }()
+
+		// //Timestamp is the begning of the execution
+		// // timestamp := time.Unix(0, int64(experiment.timestamp))
+		// // point := influxdb2.NewPoint(
+		// // 	"experiment",
+		// // 	map[string]string{
+		// // 	"topology": experiment.topology,
+		// // 	},
+	 // // 		map[string]interface{}{
+	 // // 				"endTime": 		experiment.end,
+		// // 		 	"runtime": 		experiment.runtime,
+		// // 		 	"d": 			experiment.overlayParams.d,
+		// // 		 	"dlo":          experiment.overlayParams.dlo,
+		// // 	        "dhi":          experiment.overlayParams.dhi,
+		// // 	        "dscore":       experiment.overlayParams.dscore,
+		// // 	        "dlazy":        experiment.overlayParams.dlazy,
+		// // 	        "dout":         experiment.overlayParams.dout,
+		// // 	        "gossipFactor": experiment.overlayParams.gossipFactor,
+		// // 		 },
+		// // 	timestamp)
+		// // writeAPI.WritePoint(point)
+
+
+		// pt := pointData{
+		// 	timestamp : experiment.start,
+		// 	measurement: "message",
+		// 	tags: map[string]string{
+		// 		"topology": experiment.topology,
+		// 	},
+		// 	fields: map[string]interface{}{
+	 // 				"endTime": 		experiment.end,
+		// 		 	"runtime": 		experiment.runtime,
+		// 		 	"d": 			experiment.overlayParams.d,
+		// 		 	"dlo":          experiment.overlayParams.dlo,
+		// 	        "dhi":          experiment.overlayParams.dhi,
+		// 	        "dscore":       experiment.overlayParams.dscore,
+		// 	        "dlazy":        experiment.overlayParams.dlazy,
+		// 	        "dout":         experiment.overlayParams.dout,
+		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
+		// 	},
+		// }
+		// writeDB(pt, writeClient)
+		// log.Println("point created")
+
+		// // Clean traces
+		// // rm := "rm -rf "+TRACES_PATH+"trace_*"
+
+	 // //    cmd := exec.Command(rm)
+		// // _, err := cmd.Output()
+		// // if err != nil {
+		// //     log.Println(err.Error())
+		// //     return
+		// // }
+
+
+	 //    // -----------------------------------------
+	 //    // 		Load traces into db
+	 //    // -----------------------------------------
+	 //    // for _, hostname := range hosts {
+	 //    // 	//copy traces
+	 //    // 	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
+
+	 //    // 	// cmd := exec.Command(copy)
+		//    //  // stdout, err := cmd.Output()
+		//    //  // if err != nil {
+		//    //  //     log.Println(err.Error())
+		//    //  //     return
+		//    //  // }
+
+		//    //  // Print the output
+		//    //  log.Println("Copying trace from "+hostname)//+": "+string(stdout))
+
+		//    //  go scpTrace(hostname)
+
+		//    //  //load traces
+		//    //  // go loadTraces(hostname, writeClient)
+	 //    // }
+
+	} else if machine == "puppet" {
+
+		//Get parameters from command line
+		param := OverlayParams{
+	        d:            *d,
+	        dlo:          *dlo,
+	        dhi:          *dhi,
+	        dscore:       *dscore,
+	        dlazy:        *dlazy,
+	        dout:         *dout,
+	        gossipFactor: *gossipFactor,
+	    }
+	    
+	    // Create struct with experiment info for the database
+	    experiment := Experiment{
+	    	topology:		topology,
+	    	runtime:		uint64(runTime),
+	    	overlayParams:	param,
+	    	start:			time.Now(),
+	    }
+
+		//Connect and start gossipsub
+		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
+		for _, hostname := range hosts {
+			log.Println("Starting GossipSub")
+			go executeCmd(gossipsub, hostname, config)
+		}
+
+		time.Sleep(runTime)
+
+		kill := "pkill -9 gossipGoSnt && pkill -9 rippled\n"
+		for _, hostname := range hosts {
+			log.Println("Stoping GossipSub")
+			go executeCmd(kill, hostname, config)
 		}
 
 		experiment.end = time.Now()
@@ -310,33 +442,6 @@ func main() {
 		   //  // go loadTraces(hostname, writeClient)
 	    // }
 
-	} else if machine == "puppet" {
-
-		//Get parameters from command line
-		// param := OverlayParams{
-	 //        d:            *d,
-	 //        dlo:          *dlo,
-	 //        dhi:          *dhi,
-	 //        dscore:       *dscore,
-	 //        dlazy:        *dlazy,
-	 //        dout:         *dout,
-	 //        gossipFactor: *gossipFactor,
-	 //    }
-
-		//Connect and start gossipsub
-		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
-		for _, hostname := range hosts {
-			log.Println("Starting GossipSub")
-			go executeCmd(gossipsub, hostname, config)
-		}
-
-		time.Sleep(runTime)
-
-		kill := "pkill -9 gossipGoSnt && pkill -9 rippled\n"
-		for _, hostname := range hosts {
-			log.Println("Stoping GossipSub")
-			go executeCmd(kill, hostname, config)
-		}
 
 	}
 	// time.Sleep(100 * time.Second)
