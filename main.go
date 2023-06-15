@@ -35,8 +35,6 @@ var GOSSIPSUB_PARAMETERS=PATH+"config/parameters.csv"
 
 var NODES_CONFIG=PATH+"rippledTools/ConfigCluster/ClusterConfig.csv"
 
-var TRACES_PATH=PATH+"traces/"
-
 var PUPPET="liberty"
 
 // var experiment="unl"
@@ -72,24 +70,12 @@ func main() {
 	topology := strings.ToLower(*experimentType)
 	runTime := *runtime
 
-	//Get parameters from command line
-	// param := OverlayParams{
-	//         d:            *d,
-	//         dlo:          *dlo,
-	//         dhi:          *dhi,
-	//         dscore:       *dscore,
-	//         dlazy:        *dlazy,
-	//         dout:         *dout,
-	//         gossipFactor: *gossipFactor,
-	// }
-
-
     // -----------------------------------------
     //      Set log file
     //			Just the go logging feature, nothing special
     // -----------------------------------------
     currentTime := time.Now()
-    LOG_FILE := "./log_"+currentTime.Format("01022006_15_04_05")+"_"+topology+".out"
+    LOG_FILE := PATH+"logs/log_"+currentTime.Format("01022006_15_04_05")+"_"+topology+".out"
     // open log file
     logFile, err := os.OpenFile(LOG_FILE, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0644)
     if err != nil {
@@ -179,14 +165,6 @@ func main() {
 	    // -----------------------------------------
 	    // 		Start rippled
 	    // -----------------------------------------
-	    // // Create struct with experiment info for the database
-	    // experiment := Experiment{
-	    // 	topology:		topology,
-	    // 	runtime:		uint64(runTime),
-	    // 	overlayParams:	param,
-	    // 	start:			time.Now(),
-	    // }
-
 	    start := []string{
 	    		"nohup " + RIPPLED_PATH+"rippled --conf="+RIPPLED_CONFIG+" --silent --net --quorum "+RIPPLED_QUORUM+" & \n",
 	    		"disown -h %1\n",
@@ -217,100 +195,20 @@ func main() {
 			    go executeCmd(stop, hostname, config)
 		    }
 		}
+	} else if machine == "node" {
 
-		// experiment.end = time.Now()
-		// time.Sleep(30)
+		// Create write client
+	    writeClient := influxdb2.NewClient(url, token)
 
-	 //    // Create write client
-	 //    writeClient := influxdb2.NewClient(url, token)
-	 //    // Define write API
-	 // //    writeAPI := writeClient.WriteAPI(org, bucket)
+		//Get hostname
+		hostname, err := os.Hostname()
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
 
-	 // //    // Get errors channel
-		// // errorsCh := writeAPI.Errors()
-		// // // Create go proc for reading and logging errors
-		// // go func() {
-		// // 	for err := range errorsCh {
-		// // 		log.Printf("write error: %s\n", err.Error())
-		// // 	}
-		// // }()
-
-		// //Timestamp is the begning of the execution
-		// // timestamp := time.Unix(0, int64(experiment.timestamp))
-		// // point := influxdb2.NewPoint(
-		// // 	"experiment",
-		// // 	map[string]string{
-		// // 	"topology": experiment.topology,
-		// // 	},
-	 // // 		map[string]interface{}{
-	 // // 				"endTime": 		experiment.end,
-		// // 		 	"runtime": 		experiment.runtime,
-		// // 		 	"d": 			experiment.overlayParams.d,
-		// // 		 	"dlo":          experiment.overlayParams.dlo,
-		// // 	        "dhi":          experiment.overlayParams.dhi,
-		// // 	        "dscore":       experiment.overlayParams.dscore,
-		// // 	        "dlazy":        experiment.overlayParams.dlazy,
-		// // 	        "dout":         experiment.overlayParams.dout,
-		// // 	        "gossipFactor": experiment.overlayParams.gossipFactor,
-		// // 		 },
-		// // 	timestamp)
-		// // writeAPI.WritePoint(point)
-
-
-		// pt := pointData{
-		// 	timestamp : experiment.start,
-		// 	measurement: "message",
-		// 	tags: map[string]string{
-		// 		"topology": experiment.topology,
-		// 	},
-		// 	fields: map[string]interface{}{
-	 // 				"endTime": 		experiment.end,
-		// 		 	"runtime": 		experiment.runtime,
-		// 		 	"d": 			experiment.overlayParams.d,
-		// 		 	"dlo":          experiment.overlayParams.dlo,
-		// 	        "dhi":          experiment.overlayParams.dhi,
-		// 	        "dscore":       experiment.overlayParams.dscore,
-		// 	        "dlazy":        experiment.overlayParams.dlazy,
-		// 	        "dout":         experiment.overlayParams.dout,
-		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
-		// 	},
-		// }
-		// writeDB(pt, writeClient)
-		// log.Println("point created")
-
-		// // Clean traces
-		// // rm := "rm -rf "+TRACES_PATH+"trace_*"
-
-	 // //    cmd := exec.Command(rm)
-		// // _, err := cmd.Output()
-		// // if err != nil {
-		// //     log.Println(err.Error())
-		// //     return
-		// // }
-
-
-	 //    // -----------------------------------------
-	 //    // 		Load traces into db
-	 //    // -----------------------------------------
-	 //    // for _, hostname := range hosts {
-	 //    // 	//copy traces
-	 //    // 	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
-
-	 //    // 	// cmd := exec.Command(copy)
-		//    //  // stdout, err := cmd.Output()
-		//    //  // if err != nil {
-		//    //  //     log.Println(err.Error())
-		//    //  //     return
-		//    //  // }
-
-		//    //  // Print the output
-		//    //  log.Println("Copying trace from "+hostname)//+": "+string(stdout))
-
-		//    //  go scpTrace(hostname)
-
-		//    //  //load traces
-		//    //  // go loadTraces(hostname, writeClient)
-	 //    // }
+		//Load the traces
+		loadTraces(hostname, writeClient)
 
 	} else if machine == "puppet" {
 
@@ -324,7 +222,7 @@ func main() {
 	        dout:         *dout,
 	        gossipFactor: *gossipFactor,
 	    }
-	    
+
 	    // Create struct with experiment info for the database
 	    experiment := Experiment{
 	    	topology:		topology,
@@ -342,6 +240,7 @@ func main() {
 
 		time.Sleep(runTime)
 
+		//Kill all execution
 		kill := "pkill -9 gossipGoSnt && pkill -9 rippled\n"
 		for _, hostname := range hosts {
 			log.Println("Stoping GossipSub")
@@ -353,43 +252,11 @@ func main() {
 
 	    // Create write client
 	    writeClient := influxdb2.NewClient(url, token)
-	    // Define write API
-	 //    writeAPI := writeClient.WriteAPI(org, bucket)
 
-	 //    // Get errors channel
-		// errorsCh := writeAPI.Errors()
-		// // Create go proc for reading and logging errors
-		// go func() {
-		// 	for err := range errorsCh {
-		// 		log.Printf("write error: %s\n", err.Error())
-		// 	}
-		// }()
-
-		//Timestamp is the begning of the execution
-		// timestamp := time.Unix(0, int64(experiment.timestamp))
-		// point := influxdb2.NewPoint(
-		// 	"experiment",
-		// 	map[string]string{
-		// 	"topology": experiment.topology,
-		// 	},
-	 // 		map[string]interface{}{
-	 // 				"endTime": 		experiment.end,
-		// 		 	"runtime": 		experiment.runtime,
-		// 		 	"d": 			experiment.overlayParams.d,
-		// 		 	"dlo":          experiment.overlayParams.dlo,
-		// 	        "dhi":          experiment.overlayParams.dhi,
-		// 	        "dscore":       experiment.overlayParams.dscore,
-		// 	        "dlazy":        experiment.overlayParams.dlazy,
-		// 	        "dout":         experiment.overlayParams.dout,
-		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
-		// 		 },
-		// 	timestamp)
-		// writeAPI.WritePoint(point)
-
-
+	    //Load experiment data into influxdb
 		pt := pointData{
 			timestamp : experiment.start,
-			measurement: "message",
+			measurement: "experiment",
 			tags: map[string]string{
 				"topology": experiment.topology,
 			},
@@ -408,41 +275,12 @@ func main() {
 		writeDB(pt, writeClient)
 		log.Println("point created")
 
-		// Clean traces
-		// rm := "rm -rf "+TRACES_PATH+"trace_*"
-
-	 //    cmd := exec.Command(rm)
-		// _, err := cmd.Output()
-		// if err != nil {
-		//     log.Println(err.Error())
-		//     return
-		// }
-
-
 	    // -----------------------------------------
 	    // 		Load traces into db
 	    // -----------------------------------------
-	    // for _, hostname := range hosts {
-	    // 	//copy traces
-	    // 	// copy := "scp "+hostname+":"+GOSSIPSUB_PATH+"trace.json "+TRACES_PATH+"trace_"+hostname+".json"
-
-	    // 	// cmd := exec.Command(copy)
-		   //  // stdout, err := cmd.Output()
-		   //  // if err != nil {
-		   //  //     log.Println(err.Error())
-		   //  //     return
-		   //  // }
-
-		   //  // Print the output
-		   //  log.Println("Copying trace from "+hostname)//+": "+string(stdout))
-
-		   //  go scpTrace(hostname)
-
-		   //  //load traces
-		   //  // go loadTraces(hostname, writeClient)
-	    // }
-
-
+	    for _, hostname := range hosts {
+	    	go runNode(hostname, config, timeout)
+	    }
 	}
 	// time.Sleep(100 * time.Second)
 	select {}

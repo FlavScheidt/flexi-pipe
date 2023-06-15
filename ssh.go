@@ -2,61 +2,10 @@ package main
 
 import (
     "bytes"
-    // "log"
-    // "io"
-    // "io/ioutil"
-    // "time"
     "log"
 
-    // scp "github.com/bramvdbogaerde/go-scp"
-    // "github.com/bramvdbogaerde/go-scp/auth"
-    // "os"
-    // "context"
-
 	"golang.org/x/crypto/ssh"
-	// kh "golang.org/x/crypto/ssh/knownhosts"
  )
-
-// func scpTrace(hostname string, config *ssh.ClientConfig) {
-//     conn, err := ssh.Dial("tcp", hostname+":22", config)
-//     if err != nil {
-//         return err
-//     }
-
-//     session, err := conn.NewSession()
-//     if err != nil {
-//         return err
-//     }
-//     defer session.Close()
-
-//     r, err := session.StdoutPipe()
-//     if err != nil {
-//         return err
-//     }
-
-//     // name := fmt.Sprintf("%s/backup_folder_%v.tar.gz", path, time.Now().Unix())
-//     name := GOSSIPSUB_PATH+"trace.json"
-//     file, err := os.OpenFile(name, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-//     if err != nil {
-//         return err
-//     }
-//     defer file.Close()
-
-//     if err := session.Start(cmd); err != nil {
-//         return err
-//     }
-
-//     n, err := io.Copy(file, r)
-//     if err != nil {
-//         return err
-//     }
-
-//     if err := session.Wait(); err != nil {
-//         return err
-//     }
-
-//     return nil
-// }
 
 
 func executeCmd(cmd string, hostname string, config *ssh.ClientConfig) string {//, client *ssh.Client) string {

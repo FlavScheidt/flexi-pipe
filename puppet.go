@@ -32,7 +32,7 @@ func runPuppet(experiment string, config *ssh.ClientConfig, duration time.Durati
         case res := <-results:
             fmt.Print(res)
         case <-timeout:
-            log.Println(hostname, ": Timed out!")
+            log.Println(hostname, ": Puppet Timed out!")
             return
     }
 }
