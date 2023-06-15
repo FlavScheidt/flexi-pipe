@@ -87,47 +87,50 @@ func main() {
     log.SetOutput(mw)
     log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
-    // -----------------------------------------
-    //		Nodes
-    // -----------------------------------------
-    //Read nodes name from config file
-    hosts, error := readNodesFile(NODES_CONFIG)
-    if err != nil {
-        log.Panic(error)
-    }
+   
+    if machine != "node" {
+    	 // -----------------------------------------
+	    //		Nodes
+	    // -----------------------------------------
+	    //Read nodes name from config file
+	    hosts, error := readNodesFile(NODES_CONFIG)
+	    if err != nil {
+	        log.Panic(error)
+	    }
 
-    log.Printf("%+v\n", hosts)
+	    log.Printf("%+v\n", hosts)
 
-    // -----------------------------------------
-    //		SSH config
-    // -----------------------------------------
-    user := "root"
-    timeout := 4800 * time.Second
+	    // -----------------------------------------
+	    //		SSH config
+	    // -----------------------------------------
+	    user := "root"
+	    timeout := 4800 * time.Second
 
-	// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
-	key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
-	if err != nil {
-		log.Fatalf("unable to read private key: %v", err)
-	}
+		// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
+		key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
+		if err != nil {
+			log.Fatalf("unable to read private key: %v", err)
+		}
 
-	// Create the Signer for this private key.
-	signer, err := ssh.ParsePrivateKey(key)
-	if err != nil {
-		log.Fatalf("unable to parse private key: %v", err)
-	}
+		// Create the Signer for this private key.
+		signer, err := ssh.ParsePrivateKey(key)
+		if err != nil {
+			log.Fatalf("unable to parse private key: %v", err)
+		}
 
-	// hostKeyCallback, err := kh.New("/root/.ssh/known_hosts")
-	hostKeyCallback, err := kh.New("/root/.ssh/known_hosts")
-	if err != nil {
-		log.Fatal("could not create hostkeycallback function: ", err)
-	}
+		// hostKeyCallback, err := kh.New("/root/.ssh/known_hosts")
+		hostKeyCallback, err := kh.New("/root/.ssh/known_hosts")
+		if err != nil {
+			log.Fatal("could not create hostkeycallback function: ", err)
+		}
 
-	config := &ssh.ClientConfig{
-		User: user,
-		Auth: []ssh.AuthMethod{
-			ssh.PublicKeys(signer),
-		},
-		HostKeyCallback: hostKeyCallback,
+		config := &ssh.ClientConfig{
+			User: user,
+			Auth: []ssh.AuthMethod{
+				ssh.PublicKeys(signer),
+			},
+			HostKeyCallback: hostKeyCallback,
+		}
 	}
 
 
