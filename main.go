@@ -145,7 +145,7 @@ func main() {
 		// -----------------------------------------
 	    // 		Clean logs and rippled databases
 	    // -----------------------------------------
-	    cmd := exec.Command("/bin/sh", TOOLS_PATH+"/NewRun/prepareNewRun.sh")
+	    cmd := exec.Command("/bin/sh", TOOLS_PATH+"NewRun/prepareNewRun.sh")
 		stdout, err := cmd.Output()
 		if err != nil {
 		    log.Println(err.Error())
