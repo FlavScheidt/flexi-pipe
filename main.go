@@ -157,7 +157,7 @@ func main() {
 	    // 		Generate config for the chosen topology
 	    // -----------------------------------------
 	    cmd = exec.Command("/bin/sh", TOOLS_PATH+"ConfigCluster/generate_config_rippled.sh "+topology)
-		stdout, err := cmd.Output()
+		stdout, err = cmd.Output()
 		if err != nil {
 		    log.Println(err.Error())
 		}
