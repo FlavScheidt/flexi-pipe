@@ -1,3 +1,6 @@
 [submodule "sntrippled"]
 	path = sntrippled
 	url = https://github.com/FlavScheidt/sntrippled
+[submodule "rippledTools"]
+	path = rippledTools
+	url = git@github.com:FlavScheidt/rippledTools.git
