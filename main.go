@@ -130,8 +130,6 @@ func main() {
 		HostKeyCallback: hostKeyCallback,
 	}
 
-
-
 	if machine == "master" {
 		// -----------------------------------------
 	    // 		Parameters for GossipSub
@@ -147,10 +145,7 @@ func main() {
 		// -----------------------------------------
 	    // 		Clean logs and rippled databases
 	    // -----------------------------------------
-	   	cd := "cd "+TOOLS_PATH+"NewRun"
-	   	clean := "./prepareNewRun.sh"
-
-	    cmd := exec.Command(cd, clean)
+	    cmd := exec.Command("/bin/sh", TOOLS_PATH+"/NewRun/prepareNewRun.sh")
 		stdout, err := cmd.Output()
 		if err != nil {
 		    log.Println(err.Error())
@@ -161,6 +156,13 @@ func main() {
 	    // -----------------------------------------
 	    // 		Generate config for the chosen topology
 	    // -----------------------------------------
+	    cmd = exec.Command("/bin/sh", TOOLS_PATH+"ConfigCluster/generate_config_rippled.sh "+topology)
+		stdout, err := cmd.Output()
+		if err != nil {
+		    log.Println(err.Error())
+		}
+		// Print the output
+		log.Println("Generating rippled config: "+string(stdout))
 
 	    // -----------------------------------------
 	    // 		Start rippled
@@ -185,7 +187,7 @@ func main() {
     		go runPuppet(topology, config, timeout, param)
 
     		//Start rippled monitor
-    		// go rippledMonitor(hosts, config, runTime)
+    		go rippledMonitor(hosts, config, runTime)
 
     		time.Sleep(runTime)
 
