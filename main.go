@@ -145,7 +145,7 @@ func main() {
 		// -----------------------------------------
 	    // 		Clean logs and rippled databases
 	    // -----------------------------------------
-	    cmd := exec.Command("/bin/sh", TOOLS_PATH+"NewRun/prepareNewRun.sh")
+	    cmd := exec.Command("/bin/bash", TOOLS_PATH+"NewRun/prepareNewRun.sh")
 	    log.Println(TOOLS_PATH+"NewRun/prepareNewRun.sh")
 		stdout, err := cmd.Output()
 		if err != nil {
@@ -157,7 +157,7 @@ func main() {
 	    // -----------------------------------------
 	    // 		Generate config for the chosen topology
 	    // -----------------------------------------
-	    cmd = exec.Command("/bin/sh", TOOLS_PATH+"ConfigCluster/generate_config_rippled.sh "+topology)
+	    cmd = exec.Command("/bin/bash", TOOLS_PATH+"ConfigCluster/generate_config_rippled.sh "+topology)
 	    log.Println(TOOLS_PATH+"ConfigCluster/generate_config_rippled.sh "+topology)
 		stdout, err = cmd.Output()
 		if err != nil {
