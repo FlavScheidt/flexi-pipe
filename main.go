@@ -142,18 +142,6 @@ func main() {
 
 	    log.Printf("%+v\n", paramsList)
 
-		// -----------------------------------------
-	    // 		Clean logs and rippled databases
-	    // -----------------------------------------
-	    cmd := exec.Command("/bin/bash", TOOLS_PATH+"NewRun/prepareNewRun.sh")
-	    log.Println(TOOLS_PATH+"NewRun/prepareNewRun.sh")
-		stdout, err := cmd.Output()
-		if err != nil {
-		    log.Println(err.Error())
-		}
-		// Print the output
-		log.Println("Cleaning logs and databases: "+string(stdout))
-
 	    // -----------------------------------------
 	    // 		Generate config for the chosen topology
 	    // -----------------------------------------
@@ -178,6 +166,18 @@ func main() {
    		// experiment.start = time.Now()
 
 		for _, param := range paramsList {
+					// -----------------------------------------
+	    // 		Clean logs and rippled databases
+	    // -----------------------------------------
+		    cmd := exec.Command("/bin/bash", TOOLS_PATH+"NewRun/prepareNewRun.sh")
+		    log.Println(TOOLS_PATH+"NewRun/prepareNewRun.sh")
+			stdout, err := cmd.Output()
+			if err != nil {
+			    log.Println(err.Error())
+			}
+			// Print the output
+			log.Println("Cleaning logs and databases: "+string(stdout))
+
 		    for _, hostname := range hosts {
 		    	log.Println(hostname+" Starting rippled")
 			    go remoteShell(start, hostname, config)
@@ -198,6 +198,7 @@ func main() {
 		    	log.Println(hostname+" Stoping rippled")
 			    go executeCmd(stop, hostname, config)
 		    }
+		    time.Sleep(100)
 		}
 	} else if machine == "node" {
 
@@ -286,7 +287,7 @@ func main() {
 	    for _, hostname := range hosts {
 	    	go runNode(hostname, config, timeout)
 	    }
-	    time.Sleep(100 * time.Second)
+	    // time.Sleep(100 * time.Second)
 	}
 	// time.Sleep(100 * time.Second)
 	select {}
