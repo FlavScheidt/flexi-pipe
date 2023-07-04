@@ -11,7 +11,8 @@ import (
     "flag"
     "strings"
     "os/exec"
-
+    "encoding/csv"
+	"strconv"
 
 	"golang.org/x/crypto/ssh"
 	kh "golang.org/x/crypto/ssh/knownhosts"
@@ -256,37 +257,12 @@ func main() {
 		experiment.end = time.Now()
 		time.Sleep(30)
 
-	    // Create write client
-	 //    writeClient := influxdb2.NewClient(url, token)
-
-	 //    //Load experiment data into influxdb
-		// pt := pointData{
-		// 	timestamp : experiment.start,
-		// 	measurement: "experiment",
-		// 	tags: map[string]string{
-		// 		"topology": experiment.topology,
-		// 	},
-		// 	fields: map[string]interface{}{
-	 // 				"endTime": 		experiment.end,
-		// 		 	"runtime": 		experiment.runtime,
-		// 		 	"d": 			experiment.overlayParams.d,
-		// 		 	"dlo":          experiment.overlayParams.dlo,
-		// 	        "dhi":          experiment.overlayParams.dhi,
-		// 	        "dscore":       experiment.overlayParams.dscore,
-		// 	        "dlazy":        experiment.overlayParams.dlazy,
-		// 	        "dout":         experiment.overlayParams.dout,
-		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
-		// 	},
-		// }
-		// writeDB(pt, writeClient)
-		// log.Println("point created")
-
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
 	    // -----------------------------------------
 	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		defer file.Close()
 		
@@ -294,10 +270,10 @@ func main() {
 		w := csv.NewWriter(file)
 		defer w.Flush()
 
-		err := w.Write([]string{experiment.start, 
-								experiment.end, 
+		err = w.Write([]string{experiment.start.String(), 
+								experiment.end.String(), 
 								experiment.topology, 
-								experiment.runTime,
+								strconv.FormatUint(experiment.runtime, 10),
 								experiment.overlayParams.d,
 								experiment.overlayParams.dlo,
 								experiment.overlayParams.dhi,
