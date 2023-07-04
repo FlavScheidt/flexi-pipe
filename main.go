@@ -32,6 +32,7 @@ var RIPPLED_QUORUM="15"
 var GOSSIPSUB_PATH="/root/gossipGoSnt/"
 var GOPATH="/usr/local/go/bin/"
 var GOSSIPSUB_PARAMETERS=PATH+"config/parameters.csv"
+var DATA_PATH=PATH+"data/"
 
 var NODES_CONFIG=PATH+"rippledTools/ConfigCluster/ClusterConfig.csv"
 
@@ -61,8 +62,8 @@ func main() {
     dout := flag.String("dout", "2", "")
     gossipFactor := flag.String("gossipFactor", "0.25", "")
 
-    // InitialDelay := flag.Duration("InitialDelay", 100 * time.Millisecond, "")
-    // Interval := flag.Duration("Interval", 1 * time.Second, "")
+    // InitialDelay := flag.Duration("InitialDelay", 100*time.Millisecond, "")
+    // Interval := flag.Duration("Interval", 1*time.Second, "")
 
     flag.Parse()
 
@@ -256,30 +257,58 @@ func main() {
 		time.Sleep(30)
 
 	    // Create write client
-	    writeClient := influxdb2.NewClient(url, token)
+	 //    writeClient := influxdb2.NewClient(url, token)
 
-	    //Load experiment data into influxdb
-		pt := pointData{
-			timestamp : experiment.start,
-			measurement: "experiment",
-			tags: map[string]string{
-				"topology": experiment.topology,
-			},
-			fields: map[string]interface{}{
-	 				"endTime": 		experiment.end,
-				 	"runtime": 		experiment.runtime,
-				 	"d": 			experiment.overlayParams.d,
-				 	"dlo":          experiment.overlayParams.dlo,
-			        "dhi":          experiment.overlayParams.dhi,
-			        "dscore":       experiment.overlayParams.dscore,
-			        "dlazy":        experiment.overlayParams.dlazy,
-			        "dout":         experiment.overlayParams.dout,
-			        "gossipFactor": experiment.overlayParams.gossipFactor,
-			},
+	 //    //Load experiment data into influxdb
+		// pt := pointData{
+		// 	timestamp : experiment.start,
+		// 	measurement: "experiment",
+		// 	tags: map[string]string{
+		// 		"topology": experiment.topology,
+		// 	},
+		// 	fields: map[string]interface{}{
+	 // 				"endTime": 		experiment.end,
+		// 		 	"runtime": 		experiment.runtime,
+		// 		 	"d": 			experiment.overlayParams.d,
+		// 		 	"dlo":          experiment.overlayParams.dlo,
+		// 	        "dhi":          experiment.overlayParams.dhi,
+		// 	        "dscore":       experiment.overlayParams.dscore,
+		// 	        "dlazy":        experiment.overlayParams.dlazy,
+		// 	        "dout":         experiment.overlayParams.dout,
+		// 	        "gossipFactor": experiment.overlayParams.gossipFactor,
+		// 	},
+		// }
+		// writeDB(pt, writeClient)
+		// log.Println("point created")
+
+	    // -----------------------------------------
+	    // 		Write experiment data to csv
+	    // -----------------------------------------
+	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println(err)
 		}
-		writeDB(pt, writeClient)
-		log.Println("point created")
+		defer file.Close()
+		
+		// create csv writer
+		w := csv.NewWriter(file)
+		defer w.Flush()
 
+		err := w.Write([]string{experiment.start, 
+								experiment.end, 
+								experiment.topology, 
+								experiment.runTime,
+								experiment.overlayParams.d,
+								experiment.overlayParams.dlo,
+								experiment.overlayParams.dhi,
+								experiment.overlayParams.dscore,
+								experiment.overlayParams.dlazy,
+								experiment.overlayParams.dout,
+								experiment.overlayParams.gossipFactor,})
+		if err != nil {
+			log.Fatalln("error writing record to file", err)
+		}
+	    
 	    // -----------------------------------------
 	    // 		Load traces into db
 	    // -----------------------------------------
