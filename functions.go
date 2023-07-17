@@ -66,7 +66,9 @@ func readParamsFile(fileName string) ([]OverlayParams, error) {
             dscore:       record[3],
             dlazy:        record[4],
             dout:         record[5],
-            gossipFactor: record[6]}
+            gossipFactor: record[6],
+            initialDelay: record[7],
+            interval:     record[8]}
 
         paramsList = append(paramsList, param)
     }
