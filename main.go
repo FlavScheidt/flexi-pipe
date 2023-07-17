@@ -48,29 +48,31 @@ func main() {
 	// Important note: we are actually reading the parameters for gs from a file
 	// However, we need to also be able to read them from command line
 	//because we will use the commandline to start the puppet
-	machineFlag := flag.String("machine", "master", "Is this machine a master or a puppet? Deafult is master")
-  	experimentType := flag.String("type", "unl", "Type of experiment. Default is unl")
+	machineFlag 	:= flag.String("machine", "master", "Is this machine a master or a puppet? Deafult is master")
+  	experimentType 	:= flag.String("type", "unl", "Type of experiment. Default is unl")
 
   	runtime := flag.Duration("runtime", 900*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
   	// runtime := flag.Duration("runtime", 100*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
 
+    d 				:= flag.String("d", "8", " sets the optimal degree for a GossipSub topic mesh")
+    dlo 			:= flag.String("dlo", "6", " Dlo sets the lower bound on the number of peers we keep in a GossipSub topic mesh")
+    dhi 			:= flag.String("dhi", "12", "Dhi sets the upper bound on the number of peers we keep in a GossipSub topic mesh")
+    dscore 			:= flag.String("dscore", "4", "Dscore affects how peers are selected when pruning a mesh due to over subscription")
+    dlazy 			:= flag.String("dlazy", "8", "Dlazy affects how many peers we will emit gossip to at each heartbeat")
+    dout 			:= flag.String("dout", "2", "Dout sets the quota for the number of outbound connections to maintain in a topic mesh")
+    gossipFactor 	:= flag.String("gossipFactor", "0.25", "GossipFactor affects how many peers we will emit gossip to at each heartbeat")
 
-    d := flag.String("d", "8", "")
-    dlo := flag.String("dlo", "6", "")
-    dhi := flag.String("dhi", "12", "")
-    dscore := flag.String("dscore", "4", "")
-    dlazy := flag.String("dlazy", "8", "")
-    dout := flag.String("dout", "2", "")
-    gossipFactor := flag.String("gossipFactor", "0.25", "")
-
-    // InitialDelay := flag.Duration("InitialDelay", 100*time.Millisecond, "")
-    // Interval := flag.Duration("Interval", 1*time.Second, "")
+    InitialDelay 	:= flag.String("InitialDelay", "100", "Heartbeath initial delay in milliseconds")
+    Interval 		:= flag.String("Interval", "1", "Heartbeat interval in seconds")
 
     flag.Parse()
 
-	machine := strings.ToLower(*machineFlag)
-	topology := strings.ToLower(*experimentType)
-	runTime := *runtime
+	machine 	:= strings.ToLower(*machineFlag)
+	topology 	:= strings.ToLower(*experimentType)
+	runTime 	:= *runtime
+
+	// initialDelay 	:= (*InitialDelay)//*time.Millisecond
+	// interval 		:= (*Interval)//*time.Second
 
     // -----------------------------------------
     //      Set log file
@@ -219,15 +221,16 @@ func main() {
 
 	} else if machine == "puppet" {
 
-		//Get parameters from command line
 		param := OverlayParams{
-	        d:            *d,
-	        dlo:          *dlo,
-	        dhi:          *dhi,
-	        dscore:       *dscore,
-	        dlazy:        *dlazy,
-	        dout:         *dout,
-	        gossipFactor: *gossipFactor,
+	        d:            	*d,
+	        dlo:          	*dlo,
+	        dhi:          	*dhi,
+	        dscore:       	*dscore,
+	        dlazy:        	*dlazy,
+	        dout:         	*dout,
+	        gossipFactor: 	*gossipFactor,
+	        initialDelay:	*InitialDelay,
+			interval:		*Interval,
 	    }
 
 	    // Create struct with experiment info for the database
@@ -239,7 +242,16 @@ func main() {
 	    }
 
 		//Connect and start gossipsub
-		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+" -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
+		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+
+				"-d="+param.d+ 
+				"-dlo="+param.dlo+ 
+				"-dhi="+param.dhi+ 
+				"-dscore="+param.dscore+ 
+				"-dlazy="+param.dlazy+
+				"-dout="+param.dout+
+				"-gossipFactor="+param.gossipFactor+
+				"-initialDelay="+param.initialDelay+
+				"-interval="+param.interval+"\n"
 		for _, hostname := range hosts {
 			log.Println("Starting GossipSub")
 			go executeCmd(gossipsub, hostname, config)
@@ -280,7 +292,9 @@ func main() {
 								experiment.overlayParams.dscore,
 								experiment.overlayParams.dlazy,
 								experiment.overlayParams.dout,
-								experiment.overlayParams.gossipFactor,})
+								experiment.overlayParams.gossipFactor,
+								experiment.overlayParams.initialDelay,
+								experiment.overlayParams.interval})
 		if err != nil {
 			log.Fatalln("error writing record to file", err)
 		}

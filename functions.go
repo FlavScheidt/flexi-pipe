@@ -14,14 +14,8 @@ import (
     start               time.Time
     end                 time.Time
     overlayParams       OverlayParams
-    // heartbeatParams     HeartbeatParams,
     runtime             uint64
  }
-
-//  type HeartbeatParams struct {
-//     InitialDelay time.Duration
-//     Interval     time.Duration
-// }
 
 type OverlayParams struct {
     d            string
@@ -31,6 +25,8 @@ type OverlayParams struct {
     dlazy        string
     dout         string
     gossipFactor string
+    initialDelay string
+    interval     string
 }
 
 func readNodesFile(fileName string) ([]string, error) {
