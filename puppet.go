@@ -19,7 +19,16 @@ func runPuppet(experiment string, config *ssh.ClientConfig, duration time.Durati
     results := make(chan string, 10)
     timeout := time.After(duration)
 
-    cmd := "cd "+PATH+" && "+GOPATH+"go run . -type="+experiment+" -machine=puppet -d="+param.d+" -dlo="+param.dlo+" -dhi="+param.dhi+" -dscore="+param.dscore+" -dlazy="+param.dlazy+" -dout="+param.dout+"\n"
+    cmd := "cd "+PATH+" && "+GOPATH+"go run . -type="+experiment+" -machine=puppet -d="+param.d+
+            " -dlo="+param.dlo+
+            " -dhi="+param.dhi+
+            " -dscore="+param.dscore+
+            " -dlazy="+param.dlazy+
+            " -dout="+param.dout+
+            " -gossipFactor="+param.gossipFactor+
+            " -initialDelay="+param.initialDelay+
+            " -interval="+param.interval+
+            "\n"
     hostname := PUPPET
     
     go func(hostname string) {
