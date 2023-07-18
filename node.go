@@ -3,7 +3,7 @@ package main
 import (  
 
 	// // "context"
-  	"fmt"
+  	// "fmt"
  //  	// "os"
   	"time"
   	"log"
@@ -26,6 +26,7 @@ func runNode(hostname string, config *ssh.ClientConfig, duration time.Duration) 
     timeout := time.After(duration)
 
     cmd := "cd "+PATH+" && "+GOPATH+"go run . -machine=node\n"
+    log.Println(cmd)
     
     go func(hostname string) {
         results <- executeCmd(cmd, hostname, config)
@@ -36,7 +37,7 @@ func runNode(hostname string, config *ssh.ClientConfig, duration time.Duration) 
 
     select {
         case res := <-results:
-            fmt.Print(res)
+            log.Print(res)
         case <-timeout:
             log.Println(hostname, ": Influx Load Timed out!")
             return

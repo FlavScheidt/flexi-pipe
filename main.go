@@ -307,6 +307,7 @@ func main() {
 	    log.Println("Starting nodes to load traces into influx")
 	    for _, hostname := range hosts {
 	    	go runNode(hostname, config, timeout)
+	    	log.Println(hostname)
 	    }
 	    // time.Sleep(100 * time.Second)
 	}
