@@ -243,15 +243,15 @@ func main() {
 
 		//Connect and start gossipsub
 		gossipsub := "cd "+GOSSIPSUB_PATH+" && "+GOPATH+"go run . -type="+topology+
-				"-d="+param.d+ 
-				"-dlo="+param.dlo+ 
-				"-dhi="+param.dhi+ 
-				"-dscore="+param.dscore+ 
-				"-dlazy="+param.dlazy+
-				"-dout="+param.dout+
-				"-gossipFactor="+param.gossipFactor+
-				"-initialDelay="+param.initialDelay+
-				"-interval="+param.interval+"\n"
+				" -d="+param.d+ 
+				" -dlo="+param.dlo+ 
+				" -dhi="+param.dhi+ 
+				" -dscore="+param.dscore+ 
+				" -dlazy="+param.dlazy+
+				" -dout="+param.dout+
+				" -gossipFactor="+param.gossipFactor+
+				" -initialDelay="+param.initialDelay+
+				" -interval="+param.interval+"\n"
 
 		log.Println(gossipsub)
 		for _, hostname := range hosts {
