@@ -252,6 +252,8 @@ func main() {
 				"-gossipFactor="+param.gossipFactor+
 				"-initialDelay="+param.initialDelay+
 				"-interval="+param.interval+"\n"
+
+		log.Println(gossipsub)
 		for _, hostname := range hosts {
 			log.Println("Starting GossipSub")
 			go executeCmd(gossipsub, hostname, config)

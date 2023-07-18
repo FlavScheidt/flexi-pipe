@@ -444,7 +444,7 @@ func loadTraces(hostname string,  writeClient influxdb2.Client) {
 	}()
 
     //Load json
-	fileName := GOSSIPSUB_PATH+"/trace.json"
+	fileName := GOSSIPSUB_PATH+"trace.json"
 	bytes := jsons.NewFileReader(fileName)
 
 	//Read json
