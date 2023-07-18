@@ -62,8 +62,8 @@ func main() {
     dout 			:= flag.String("dout", "2", "Dout sets the quota for the number of outbound connections to maintain in a topic mesh")
     gossipFactor 	:= flag.String("gossipFactor", "0.25", "GossipFactor affects how many peers we will emit gossip to at each heartbeat")
 
-    InitialDelay 	:= flag.String("InitialDelay", "100", "Heartbeath initial delay in milliseconds")
-    Interval 		:= flag.String("Interval", "1", "Heartbeat interval in seconds")
+    initialDelay 	:= flag.String("initialDelay", "100", "Heartbeath initial delay in milliseconds")
+    interval 		:= flag.String("interval", "1", "Heartbeat interval in seconds")
 
     flag.Parse()
 
@@ -229,8 +229,8 @@ func main() {
 	        dlazy:        	*dlazy,
 	        dout:         	*dout,
 	        gossipFactor: 	*gossipFactor,
-	        initialDelay:	*InitialDelay,
-			interval:		*Interval,
+	        initialDelay:	*initialDelay,
+			interval:		*interval,
 	    }
 
 	    // Create struct with experiment info for the database
