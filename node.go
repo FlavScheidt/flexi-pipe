@@ -22,6 +22,7 @@ import (
 
 func runNode(hostname string, config *ssh.ClientConfig, duration time.Duration) {
 
+    log.Println("Enter function")
     results := make(chan string, 10)
     timeout := time.After(duration)
 
