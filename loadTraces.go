@@ -431,8 +431,10 @@ func writeSentRPC(measurement string, data map[string]interface{}, timestamp tim
 }
 
 func loadTraces(hostname string,  writeClient influxdb2.Client) {
+	log.Println("Enter loadTraces")
     // Define write API
     writeAPI := writeClient.WriteAPI(org, bucket)
+    log.Println("Write api created")
 
     // Get errors channel
 	errorsCh := writeAPI.Errors()

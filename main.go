@@ -206,8 +206,10 @@ func main() {
 		}
 	} else if machine == "node" {
 
+		log.Println("Starting database load")
 		// Create write client
 	    writeClient := influxdb2.NewClient(url, token)
+	    log.Println("wirteclient ok")
 
 		//Get hostname
 		hostname, err := os.Hostname()
@@ -215,6 +217,8 @@ func main() {
 			log.Println(err)
 			os.Exit(1)
 		}
+
+		log.Println("I am ", hostname)
 
 		//Load the traces
 		loadTraces(hostname, writeClient)
