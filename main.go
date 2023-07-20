@@ -106,7 +106,7 @@ func main() {
     //		SSH config
     // -----------------------------------------
     user := "root"
-    timeout := 4800 * time.Second
+    timeout := 48000 * time.Second
 
 	// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
 	key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
@@ -313,7 +313,7 @@ func main() {
 	    	runNode(hostname, config, timeout)
 	    	log.Println(hostname)
 	    }
-	    // time.Sleep(100 * time.Second)
+	    time.Sleep(100 * time.Second)
 	}
 	// time.Sleep(100 * time.Second)
 	// select {}
