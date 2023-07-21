@@ -2,7 +2,7 @@ package main
 
 import (
     // "bytes"
-    // "fmt"
+    "fmt"
     // "io"
     // "io/ioutil"
     // "os"
@@ -68,7 +68,7 @@ func runParallel(cmd string, hosts []string, config *ssh.ClientConfig, duration 
     for i := 0; i < len(hosts); i++ {
         select {
         case res := <-results:
-            log.Print(res)
+            fmt.Print(res)
         case <-timeout:
             log.Println("Timed out!")
             return

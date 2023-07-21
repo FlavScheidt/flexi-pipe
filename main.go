@@ -106,7 +106,7 @@ func main() {
     //		SSH config
     // -----------------------------------------
     user := "root"
-    timeout := 48000 * time.Second
+    timeout := 56000 * time.Second
 
 	// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
 	key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
@@ -202,14 +202,13 @@ func main() {
 		    	log.Println(hostname+" Stoping rippled")
 			    go executeCmd(stop, hostname, config)
 		    }
-		    time.Sleep(100)
+		    time.Sleep(100 * time.Second)
 		}
 	} else if machine == "node" {
 
 		log.Println("Starting database load")
 		// Create write client
 	    writeClient := influxdb2.NewClient(url, token)
-	    log.Println("wirteclient ok")
 
 		//Get hostname
 		hostname, err := os.Hostname()
@@ -273,7 +272,7 @@ func main() {
 		}
 
 		experiment.end = time.Now()
-		time.Sleep(30)
+		time.Sleep(100 * time.Second)
 
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
