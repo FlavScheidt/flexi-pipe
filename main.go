@@ -277,7 +277,7 @@ func main() {
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
 	    // -----------------------------------------
-	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 		if err != nil {
 			log.Println(err)
 		}
@@ -303,7 +303,8 @@ func main() {
 		if err != nil {
 			log.Fatalln("error writing record to file", err)
 		}
-	    
+	    log.Println("Experiment written succesfully")
+
 	    // -----------------------------------------
 	    // 		Load traces into db
 	    // -----------------------------------------
