@@ -106,7 +106,7 @@ func main() {
     //		SSH config
     // -----------------------------------------
     user := "root"
-    timeout := 56000 * time.Second
+    timeout := 256000 * time.Second
 
 	// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
 	key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
