@@ -17,6 +17,8 @@ import matplotlib.colors as colors
 import pandasql as ps
 import sqlite3
 
+import csv
+
 # import functions
 
 
@@ -242,6 +244,8 @@ parameter = "interval"
 parameter_name = "interval"
 grouping_key = "messageID"
 
+
+
 #############################################
 #	Query experiments file and influx to get all the data
 #############################################
@@ -251,10 +255,15 @@ traces = from_influx(url, token, org, measurement, start_time, end_time, groupin
 #############################################
 #	Loop to procces each graph
 #############################################
+with open('graph_parameters.csv', 'r') as file:
+    reader = csv.DictReader(file)
+    data = list(reader)
+    print(data)
 
-#get topology
-exp = experiments.loc[experiments['topology'] == topology]
 
-gb = group_time(traces, exp, parameter, grouping_key)
+# #get topology
+# exp = experiments.loc[experiments['topology'] == topology]
 
-generate_graph(measurement, measurement_name, topology, gb, parameter,parameter_name)
+# gb = group_time(traces, exp, parameter, grouping_key)
+
+# generate_graph(measurement, measurement_name, topology, gb, parameter,parameter_name)
