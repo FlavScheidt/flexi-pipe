@@ -106,7 +106,7 @@ func main() {
     //		SSH config
     // -----------------------------------------
     user := "root"
-    timeout := 256000 * time.Second
+    timeout := 1256000 * time.Second
 
 	// key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
 	key, err := ioutil.ReadFile("/root/.ssh/id_rsa")
@@ -300,6 +300,8 @@ func main() {
 								experiment.overlayParams.gossipFactor,
 								experiment.overlayParams.initialDelay,
 								experiment.overlayParams.interval})
+		w.Flush()
+
 		if err != nil {
 			log.Fatalln("error writing record to file", err)
 		}
@@ -310,7 +312,7 @@ func main() {
 	    // -----------------------------------------
 	    log.Println("Starting nodes to load traces into influx")
 	    for _, hostname := range hosts {
-	    	runNode(hostname, config, timeout)
+	    	go runNode(hostname, config, timeout)
 	    	log.Println(hostname)
 	    }
 	    time.Sleep(100 * time.Second)
