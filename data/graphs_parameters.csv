@@ -1,15 +1,13 @@
 measurement,measurement_name,topology,parameter,parameter_name,grouping_key,start,end
-duplicateMessage,Message Overhead,general,interval,Heartbeat,messageID,1691423149,1691436284
-duplicateMessage,Message Overhead,general,d,D,messageID,1691436496,1691446298
-duplicateMessage,Message Overhead,general,dlo,Dlo,messageID,1691446510,1691452974
-duplicateMessage,Message Overhead,general,dscore,Dscore,messageID,1691449849,1691456313
-duplicateMessage,Message Overhead,general,dlazy,Dlazy,messageID,1691449849,1691459652
-duplicateMessage,Message Overhead,general,dout,Dout,messageID,1691456526,1691164153
-duplicateMessage,Message Overhead,general,gossipFactor,Gossip Factor,messageID,1691459865,1691473008
-message,Messages,general,interval,Heartbeat,peerID,1691423149,1691436284
-message,Messages,general,d,D,peerID,1691436496,1691446298
-message,Messages,general,dlo,Dlo,peerID,1691446510,1691452974
-message,Messages,general,dscore,Dscore,peerID,1691158801,1691456313
-message,Messages,general,dlazy,Dlazy,peerID,1691449849,1691459652
-message,Messages,general,dout,Dout,peerID,1691456526,1691462991
-message,Messages,general,gossipFactor,Gossip Factor,peerID,1691459865,1691473008
+deliverMessage,Messages,general,interval,Heartbeat,messageID,1691423149,1691436284
+deliverMessage,Messages,general,d,D,messageID,1691436496,1691446298
+deliverMessage,Messages,general,dlo,Dlo,messageID,1691446510,1691452974
+deliverMessage,Messages,general,dscore,Dscore,messageID,1691158801,1691456313
+deliverMessage,Messages,general,dlazy,Dlazy,messageID,1691449849,1691459652
+deliverMessage,Messages,general,gossipFactor,Gossip Factor,messageID,1691459865,1691473008
+recvRPC,Received RPC,general,interval,Heartbeat,type,1691423149,1691436284
+recvRPC,Received RPC,general,d,D,type,1691436496,1691446298
+recvRPC,Received RPC,general,dlo,Dlo,type,1691446510,1691452974
+recvRPC,Received RPC,general,dscore,Dscore,type,1691158801,1691456313
+recvRPC,Received RPC,general,dlazy,Dlazy,type,1691449849,1691459652
+recvRPC,Received RPC,general,gossipFactor,Gossip Factor,type,1691459865,1691473008
