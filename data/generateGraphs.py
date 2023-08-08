@@ -71,7 +71,7 @@ def experiment(start_time, end_time, filepath):
 
 #Query from influxdb
 def from_influx(url, token, org, measurement, start_time, end_time,grouping_key):
-    client = InfluxDBClient(url=url, token=token, org=org,  timeout=30_000)
+    client = InfluxDBClient(url=url, token=token, org=org,  timeout=900_000)
 
     # write_api = client.write_api(write_options=SYNCHRONOUS)
     query_api = client.query_api()
@@ -89,7 +89,12 @@ def from_influx(url, token, org, measurement, start_time, end_time,grouping_key)
 
     return df
 
-def group_time(df, expTime, parameter,grouping_key):
+def group_time(df, expRaw, parameter,grouping_key, start, end):
+
+    expTime = expRaw.loc[expRaw['startUnix']>= int(start)].loc[expRaw['endUnix'] <= int(end)]
+    print("expTime")
+    print(expTime)
+
     #Make the db in memory
     conn = sqlite3.connect(':memory:')
     #write the tables
@@ -108,6 +113,9 @@ def group_time(df, expTime, parameter,grouping_key):
         '''
     dfNew = pd.read_sql_query(qry, conn)
 
+    print("SQL query -> join")
+    print(dfNew)
+
     dfNew = dfNew.set_index('experiment').rename(columns={"_time": "min"})#.drop(columns=["messageID"])
 
     dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
@@ -122,6 +130,8 @@ def group_time(df, expTime, parameter,grouping_key):
 
     #Min datetime of each experiment
     minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=[parameter, 'count'])
+    print("Min time per experiment")
+    print(minTime)
 
     # minTime.head(20)
 
@@ -134,6 +144,8 @@ def group_time(df, expTime, parameter,grouping_key):
     # #Calculate delta in seconds 
     dfWithMin["delta"] = ((dfWithMin["_time"] - dfWithMin["_min"]) / pd.Timedelta(seconds=1)).astype(int)
 
+    # print(dfWithMin)
+
     # dfWithMin.head(100)
 
     #Aggregate by time
@@ -141,18 +153,23 @@ def group_time(df, expTime, parameter,grouping_key):
     # gb.columns = gb.columns.droplevel(0)
     # gb.reset_index(level=0, inplace=True)
 
+    print("Grouped by time")
+    print(gb)
+
     # gb.head(100)
 
     #Average by interval
-    intv = gb.groupby([parameter,'delta']).agg(["mean"]).sort_values(by=["interval", "delta"])
+    intv = gb.groupby([parameter,'delta']).agg(["mean"]).sort_values(by=[parameter, "delta"])
     intv.columns = intv.columns.droplevel(0)#.droplevel(1)
     # intv.reset_index(level=0, inplace=True)
     intv.reset_index(inplace=True)
 
+    print("AVG to plot")
+    print(intv)
+
     return intv
 
 def generate_graph(measurement, measurement_name, topology, intv, parameter, parameter_name):
-    metrics = intv[parameter].drop_duplicates().to_numpy()
 
     plt.style.use('ggplot')
     # kwargs = dict(color=['hotpink'], alpha=0.9)#, density=True)
@@ -177,6 +194,9 @@ def generate_graph(measurement, measurement_name, topology, intv, parameter, par
 
     fig.set_size_inches(11, 4.3)
 
+    metrics = intv[parameter].drop_duplicates().to_numpy()
+    print(metrics)
+
     for metric in np.nditer(metrics):
         aux = intv.loc[intv[parameter] == metric]
         interv = aux[parameter].drop_duplicates().item()
@@ -188,7 +208,7 @@ def generate_graph(measurement, measurement_name, topology, intv, parameter, par
     fig.savefig('./figures/'+measurement+'_'+topology+'_'+parameter+'.pdf', format='pdf', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
     fig.savefig('./figures/'+measurement+'_'+topology+'_'+parameter+'.png', format='png', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
 
-    # plt.show()
+    plt.show()
 
 #############################################
 #	Read config file and load data into the variables
@@ -218,13 +238,14 @@ with open(filepath, 'r') as file_object:
             bucket = match.group('bucket')
         
         line = file_object.readline()
-url="http://192.168.20.58:8086"
+# url="http://192.168.20.58:8086"
+url = "http://localhost:8086"
 
 #############################################
 #	Global start and end time
 #############################################
-start_time = 1690980845
-end_time = 1690985064
+start_time = 1691423149
+end_time = 1691473008
 
 #############################################
 #	Graphs to generate
@@ -237,28 +258,43 @@ end_time = 1690985064
 #	parameter_name		(for printing on the graph header)
 #   grouping_key        (key used for grouping and counting)
 
-measurement = "duplicateMessage"
-measurement_name = "Message Overhead"
-topology = "unl"
-parameter = "interval"
-parameter_name = "interval"
-grouping_key = "messageID"
-
-
+# measurement = "duplicateMessage"
+# measurement_name = "Message Overhead"
+# topology = "unl"
+# parameter = "interval"
+# parameter_name = "interval"
+# grouping_key = "messageID"
 
 #############################################
 #	Query experiments file and influx to get all the data
 #############################################
 experiments = experiment(start_time, end_time, './experiments.csv')
-traces = from_influx(url, token, org, measurement, start_time, end_time, grouping_key)
+print(experiments)
 
 #############################################
 #	Loop to procces each graph
 #############################################
-with open('graph_parameters.csv', 'r') as file:
+# oldMeasurement = ''
+with open('graphs_parameters.csv', 'r') as file:
     reader = csv.DictReader(file)
     data = list(reader)
-    print(data)
+    # print(data)
+    for graph in data:
+        print(graph)
+        # if graph['measurement'] != oldMeasurement:
+        print("Influx query")
+        traces = from_influx(url, token, org, graph['measurement'], graph['start'], graph['end'], graph['grouping_key'])
+
+        exp = experiments.loc[experiments['topology'] == graph['topology']]
+        gb = group_time(traces, exp, graph['parameter'], graph['grouping_key'], graph['start'], graph['end'])
+
+        print("Data tratead")
+
+        generate_graph(graph['measurement'], graph['measurement_name'], graph['topology'], gb, graph['parameter'],graph['parameter_name'])
+
+        print("Graph generated")
+
+        # oldMeasurement = graph['measurement']
 
 
 # #get topology
