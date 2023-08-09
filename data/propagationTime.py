@@ -172,6 +172,6 @@ with open('graphs_parameters.csv', 'r') as file:
         df = calcAverageTime(published, received, graph['parameter'])
         print("Data tratead")
 
-        generate_graph(graph['measurement'], graph['measurement_name'], graph['topology'], gb, graph['parameter'],graph['parameter_name'])
+        plotPropTime(df,graph['topology'], graph['parameter'],graph['parameter_name'])
 
         print("Graph generated")

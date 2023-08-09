@@ -1,4 +1,10 @@
 measurement,measurement_name,topology,parameter,parameter_name,grouping_key,start,end
+duplicateMessage,Message Overhead,general,interval,Heartbeat,messageID,1691423149,1691436284
+duplicateMessage,Message Overhead,general,d,D,messageID,1691436496,1691446298
+duplicateMessage,Message Overhead,general,dlo,Dlo,messageID,1691446510,1691452974
+duplicateMessage,Message Overhead,general,dscore,Dscore,messageID,1691449849,1691456313
+duplicateMessage,Message Overhead,general,dlazy,Dlazy,messageID,1691449849,1691459652
+duplicateMessage,Message Overhead,general,gossipFactor,Gossip Factor,messageID,1691459865,1691473008
 deliverMessage,Messages,general,interval,Heartbeat,messageID,1691423149,1691436284
 deliverMessage,Messages,general,d,D,messageID,1691436496,1691446298
 deliverMessage,Messages,general,dlo,Dlo,messageID,1691446510,1691452974
@@ -11,3 +17,15 @@ recvRPC,Received RPC,general,dlo,Dlo,type,1691446510,1691452974
 recvRPC,Received RPC,general,dscore,Dscore,type,1691158801,1691456313
 recvRPC,Received RPC,general,dlazy,Dlazy,type,1691449849,1691459652
 recvRPC,Received RPC,general,gossipFactor,Gossip Factor,type,1691459865,1691473008
+graft,Graft,general,interval,Heartbeat,topic,1691423149,1691436284
+graft,Graft,general,d,D,topic,1691436496,1691446298
+graft,Graft,general,dlo,Dlo,topic,1691446510,1691452974
+graft,Graft,general,dscore,Dscore,topic,1691158801,1691456313
+graft,Graft,general,dlazy,Dlazy,topic,1691449849,1691459652
+graft,Graft,general,gossipFactor,Gossip Factor,topic,1691459865,1691473008
+prune,Prune,general,interval,Heartbeat,topic,1691423149,1691436284
+prune,Prune,general,d,D,topic,1691436496,1691446298
+prune,Prune,general,dlo,Dlo,topic,1691446510,1691452974
+prune,Prune,general,dscore,Dscore,topic,1691158801,1691456313
+prune,Prune,general,dlazy,Dlazy,topic,1691449849,1691459652
+prune,Prune,general,gossipFactor,Gossip Factor,topic,1691459865,1691473008

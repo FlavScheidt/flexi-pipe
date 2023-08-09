@@ -21,8 +21,63 @@ import csv
 
 import functions
 
+def insert_missing_time(dfAggTime):
+    # Fill the voids
+    minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=['count'])
+    maxTime = dfAggTime.groupby(['experiment']).agg('max').drop(columns=['count'])
+    # maxTime.head(10)
 
-# Function to parse configurations from go config file
+    minMax = minTime.merge(maxTime, on=['experiment']).rename(columns={"min_x": "min", "min_y": "max", "interval_x": "interval"}).reset_index()
+    # minMax.head(10)
+
+    date_list = pd.date_range(minMax['min'].min(), minMax['max'].max(),freq='10s')
+
+    dates = pd.DataFrame(date_list).rename(columns={0:"_time"})
+    dates['count'] = 0
+
+    #Make the db in memory
+    conn = sqlite3.connect(':memory:')
+    #write the tables
+    minMax.to_sql('minMax', conn, index=False)
+    dates.to_sql('dates', conn, index=False)
+
+    qry = '''
+        select  
+            dates._time as _time,
+            minMax.interval,
+            minMax.experiment,
+            dates.count
+        from
+            dates join minMax on
+            dates._time between minMax.min and minMax.max
+        '''
+    dfFill = pd.read_sql_query(qry, conn)
+    # dfFill.head(10)
+    # print(dfFill)
+    print(dfAggTime)
+
+    #write the tables
+    dfFill.to_sql('fill', conn, index=False)
+    dfAggTime.to_sql('df', conn, index=False)
+
+    qry = '''
+        select
+           experiment,
+           interval,
+           _time as min,
+           count
+        from fill
+        where fill._time not in (SELECT DISTINCT min FROM df)
+        '''
+    dfMissingTime = pd.read_sql_query(qry, conn).reset_index(drop=True).drop_duplicates()
+    # print(dfMissingTime)
+    dfMissingTime['min'] = pd.to_datetime(dfMissingTime["min"], format='mixed')
+    # dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
+
+    df =  pd.concat([dfMissingTime.reset_index(drop=True), dfAggTime.reset_index(drop=True)]).sort_values(by=['min'])
+    # dfAggTime.head(200)
+
+    return df
 
 def group_time(df, expRaw, parameter,grouping_key, start, end):
 
@@ -62,6 +117,8 @@ def group_time(df, expRaw, parameter,grouping_key, start, end):
 
     by_time = dfNoIndex.groupby([dfNoIndex['experiment'],dfNoIndex[parameter],pd.Grouper(key="min", freq='10s')])[grouping_key].count().reset_index()
     dfAggTime = by_time.rename(columns={grouping_key: "count"})
+
+    dfAggTime = insert_missing_time(dfAggTime)
 
     #Min datetime of each experiment
     minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=[parameter, 'count'])
