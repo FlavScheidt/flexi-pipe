@@ -21,13 +21,13 @@ import csv
 
 import functions
 
-def insert_missing_time(dfAggTime):
+def insert_missing_time(dfAggTime, parameter):
     # Fill the voids
     minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=['count'])
     maxTime = dfAggTime.groupby(['experiment']).agg('max').drop(columns=['count'])
     # maxTime.head(10)
 
-    minMax = minTime.merge(maxTime, on=['experiment']).rename(columns={"min_x": "min", "min_y": "max", "interval_x": "interval"}).reset_index()
+    minMax = minTime.merge(maxTime, on=['experiment']).rename(columns={"min_x": "min", "min_y": "max", parameter+"_x": parameter}).reset_index()
     # minMax.head(10)
 
     date_list = pd.date_range(minMax['min'].min(), minMax['max'].max(),freq='10s')
@@ -44,7 +44,7 @@ def insert_missing_time(dfAggTime):
     qry = '''
         select  
             dates._time as _time,
-            minMax.interval,
+            minMax.'''+parameter+''',
             minMax.experiment,
             dates.count
         from
@@ -63,7 +63,7 @@ def insert_missing_time(dfAggTime):
     qry = '''
         select
            experiment,
-           interval,
+           '''+parameter+''',
            _time as min,
            count
         from fill
@@ -118,7 +118,7 @@ def group_time(df, expRaw, parameter,grouping_key, start, end):
     by_time = dfNoIndex.groupby([dfNoIndex['experiment'],dfNoIndex[parameter],pd.Grouper(key="min", freq='10s')])[grouping_key].count().reset_index()
     dfAggTime = by_time.rename(columns={grouping_key: "count"})
 
-    dfAggTime = insert_missing_time(dfAggTime)
+    dfAggTime = insert_missing_time(dfAggTime, parameter)
 
     #Min datetime of each experiment
     minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=[parameter, 'count'])
@@ -174,7 +174,7 @@ def generate_graph(measurement, measurement_name, topology, intv, parameter, par
 
     plt.rcParams.update({'figure.figsize':(7,5), 'figure.dpi':100})
 
-    plt.gca().set(title=parameter_name+' per '+measurement_name+' '+topology, ylabel=measurement, xlabel="Time [s]")
+    plt.gca().set(title=measurement_name+' per '+parameter_name+' '+topology, ylabel=measurement, xlabel="Time [s]")
 
     plt.rcParams.update({'font.size': 14})
     # plt.hist([x1, x2, x6], **kwargs, label=['GS 1 topic', 'Vanilla', 'Squelching'])

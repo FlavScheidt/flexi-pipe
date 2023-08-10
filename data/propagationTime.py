@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from influxdb_client import InfluxDBClient, Point, Dialect
 
 import re
-
 import time
 import datetime
 
@@ -14,21 +11,23 @@ import warnings
 from influxdb_client.client.warnings import MissingPivotFunction
 
 import matplotlib.pyplot as plt
-
 import matplotlib.ticker as ticker
 import matplotlib.colors as colors
 
 import pandasql as ps
 import sqlite3
 
+import csv
+
 import functions
 
 
-def calcAverageTime(publish, received, parameter):
-	publish = publish[['_time', 'messageID', 'topic']]
-	received = received[['_time', 'messageID', 'topic']]
+def calcAverageTime(publish, received, expTime, parameter):
 
-	joined = publish.merge(received, on=['messageID', 'topic'])
+	publish = publish[['_time', 'messageID']]
+	received = received[['_time', 'messageID']]
+
+	joined = publish.merge(received, on=['messageID'])
 	joined['diff'] = ((joined['_time_y'] - joined['_time_x'])/ pd.Timedelta(microseconds=1)).astype(int)
 	# joined.head(10)
 
@@ -43,9 +42,8 @@ def calcAverageTime(publish, received, parameter):
 	        joined._time_x,
 	        joined.diff,
 	        joined.messageID,
-	        joined.topic,
 	        expTime.experiment,
-	        expTime.'''parameter'''
+	        expTime.'''+parameter+'''
 	    from
 	        joined join expTime on
 	        joined._time_x between expTime.start and expTime.end
@@ -55,21 +53,23 @@ def calcAverageTime(publish, received, parameter):
 	# dfNew.head(20)
 
 	#Average propagation time per interval
-	df = dfNew.drop(columns=['_time', 'messageID', 'topic'])
+	df = dfNew.drop(columns=['_time', 'messageID'])
 
 	avgPropExp = df.groupby(['experiment']).agg('mean')
 	avgPropExp.reset_index(inplace=True)
 	avgPropExp = avgPropExp.drop(columns=['experiment'])
 
-	avgProp = avgPropExp.groupby(['interval']).agg({'diff':['mean','std']})
+	avgProp = avgPropExp.groupby([parameter]).agg({'diff':['mean','std']})
 	avgProp.columns = avgProp.columns.droplevel(0)
 	avgProp.reset_index(inplace=True)
+
+	return avgProp
 
 	# avgProp.head(100)
 
 def plotPropTime(df, topology, parameter, parameter_name):
 
-	y_labels = df['interval'].astype(str).to_numpy()
+	y_labels = df[parameter].astype(str).to_numpy()
 	# print(y_labels)
 
 	plt.style.use('ggplot')
@@ -97,12 +97,14 @@ def plotPropTime(df, topology, parameter, parameter_name):
 
 	#Set y axis labels
 	ax.barh(y_labels, df['mean'], xerr=df['std'], align='center')
-	ax.set_yticks(y_labels, labels=parameter_name)
+	ax.set_yticks(y_labels)
 	ax.invert_yaxis()  # labels read top-to-bottom
 	ax.set_xlabel('Propagation time [μs]')
+	ax.set_ylabel(parameter_name)
+
 
 	fig.savefig('./figures/propTime_'+topology+'_'+parameter+'.pdf', format='pdf', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
-    fig.savefig('./figures/propTime_'+topology+'_'+parameter+'.png', format='png', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
+	fig.savefig('./figures/propTime_'+topology+'_'+parameter+'.png', format='png', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
 
 
 	plt.show()
@@ -159,7 +161,7 @@ print(experiments)
 #	Loop to procces each graph
 #############################################
 # oldMeasurement = ''
-with open('graphs_parameters.csv', 'r') as file:
+with open('bargraphs_parameters.csv', 'r') as file:
     reader = csv.DictReader(file)
     data = list(reader)
     for graph in data:
@@ -169,7 +171,7 @@ with open('graphs_parameters.csv', 'r') as file:
         received 	= functions.from_influx(url, token, org, "deliverMessage", graph['start'], graph['end'], graph['grouping_key'])
 
         exp = experiments.loc[experiments['topology'] == graph['topology']]
-        df = calcAverageTime(published, received, graph['parameter'])
+        df = calcAverageTime(published, received, exp, graph['parameter'])
         print("Data tratead")
 
         plotPropTime(df,graph['topology'], graph['parameter'],graph['parameter_name'])

@@ -1,0 +1,7 @@
+topology,parameter,parameter_name,grouping_key,start,end
+general,interval,Heartbeat,messageID,1691423149,1691436284
+general,d,D,messageID,1691436496,1691446298
+general,dlo,Dlo,messageID,1691446510,1691452974
+general,dscore,Dscore,messageID,1691449849,1691456313
+general,dlazy,Dlazy,messageID,1691449849,1691459652
+general,gossipFactor,Gossip Factor,messageID,1691459865,1691473008
