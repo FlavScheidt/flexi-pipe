@@ -27,6 +27,7 @@ type OverlayParams struct {
     gossipFactor string
     initialDelay string
     interval     string
+    parameter    string
 }
 
 func readNodesFile(fileName string) ([]string, error) {
@@ -68,7 +69,8 @@ func readParamsFile(fileName string) ([]OverlayParams, error) {
             dout:         record[5],
             gossipFactor: record[6],
             initialDelay: record[7],
-            interval:     record[8]}
+            interval:     record[8],
+            parameter:    record[9]}
 
         paramsList = append(paramsList, param)
     }

@@ -22,52 +22,118 @@ import csv
 import functions
 
 
-def calcAverageTime(publish, received, expTime, parameter):
+def calcBandwidth(message, rpc, expTime, parameter):
 
-	publish = publish[['_time', 'messageID']]
-	received = received[['_time', 'messageID']]
+	message = message[['_time', '_measurement']].reset_index(drop=True)
+	rpc = rpc[['_time', '_measurement']].reset_index(drop=True)
 
-	joined = publish.merge(received, on=['messageID'])
-	joined['diff'] = ((joined['_time_y'] - joined['_time_x'])/ pd.Timedelta(microseconds=1)).astype(int)
-	# joined.head(10)
+	joined = pd.concat([rpc, message])#on=['receivedFrom', 'topic'])
+	joined["_time"] = pd.to_datetime(joined["_time"])
 
 	#Make the db in memory
 	conn = sqlite3.connect(':memory:')
 	#write the tables
-	joined.to_sql('joined', conn, index=False)
+	joined.to_sql('df', conn, index=False)
 	expTime.to_sql('expTime', conn, index=False)
 
 	qry = '''
 	    select  
-	        joined._time_x,
-	        joined.diff,
-	        joined.messageID,
+	        df._time,
+	        df._measurement,
 	        expTime.experiment,
 	        expTime.'''+parameter+'''
 	    from
-	        joined join expTime on
-	        joined._time_x between expTime.start and expTime.end
+	        df join expTime on
+	        df._time between expTime.start and expTime.end
 	    '''
 	dfNew = pd.read_sql_query(qry, conn)
-	dfNew = dfNew.set_index('experiment').rename(columns={"_time_x": "_time"})#.drop(columns=["messageID"])
-	# dfNew.head(20)
 
-	#Average propagation time per interval
-	df = dfNew.drop(columns=['_time', 'messageID'])
+	dfNew = dfNew.set_index('experiment').rename(columns={"_time": "min"})#.drop(columns=["messageID"])
+
+	dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
+	# dfNew['_min'] = pd.to_datetime(dfNew["_min"])
+
+	#Try resampling for every seconds
+	dfNoIndex = dfNew.reset_index()
+	# dfNoIndex.head(10)
+
+	by_time = dfNoIndex.groupby([dfNoIndex['experiment'],dfNoIndex[parameter],pd.Grouper(key="min", freq='1s')])['_measurement'].count().reset_index()
+	dfAggTime = by_time.rename(columns={"_measurement": "count"})
+
+	print(dfAggTime)
+
+	# Fill the voids
+	minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=['count'])
+	maxTime = dfAggTime.groupby(['experiment']).agg('max').drop(columns=['count'])
+	# maxTime.head(10)
+
+	minMax = minTime.merge(maxTime, on=['experiment']).rename(columns={"min_x": "min", "min_y": "max", parameter+"_x": parameter}).drop(columns=[parameter+'_y']).reset_index()
+	# minMax.head(10)
+
+	date_list = pd.date_range(minMax['min'].min(), minMax['max'].max(),freq='1s')
+
+	dates = pd.DataFrame(date_list).rename(columns={0:"_time"})
+	dates['count'] = 0
+
+	#Make the db in memory
+	conn = sqlite3.connect(':memory:')
+	#write the tables
+	minMax.to_sql('minMax', conn, index=False)
+	dates.to_sql('dates', conn, index=False)
+
+	qry = '''
+	    select  
+	        dates._time as _time,
+	        minMax.'''+parameter+''',
+	        minMax.experiment,
+	        dates.count
+	    from
+	        dates join minMax on
+	        dates._time between minMax.min and minMax.max
+	    '''
+	dfFill = pd.read_sql_query(qry, conn)
+	# dfFill.head(10)
+	# print(dfFill)
+	# print(dfAggTime)
+
+	#write the tables
+	dfFill.to_sql('fill', conn, index=False)
+	dfAggTime.to_sql('df', conn, index=False)
+
+	qry = '''
+	    select
+	       experiment,
+	       '''+parameter+''',
+	       _time as min,
+	       count
+	    from fill
+	    where fill._time not in (SELECT DISTINCT min FROM df)
+	    '''
+	dfMissingTime = pd.read_sql_query(qry, conn).reset_index(drop=True).drop_duplicates()
+	# print(dfMissingTime)
+	dfMissingTime['min'] = pd.to_datetime(dfMissingTime["min"], format='mixed')
+	# dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
+
+	dfAggTime =  pd.concat([dfMissingTime.reset_index(drop=True), dfAggTime.reset_index(drop=True)]).sort_values(by=['min'])
+	df = dfAggTime.drop(columns=['min'])
 
 	avgPropExp = df.groupby(['experiment']).agg('mean')
 	avgPropExp.reset_index(inplace=True)
 	avgPropExp = avgPropExp.drop(columns=['experiment'])
 
-	avgProp = avgPropExp.groupby([parameter]).agg({'diff':['mean','std']})
+	# avgPropExp.head(10)
+	print(avgPropExp)
+
+	avgProp = avgPropExp.groupby([parameter]).agg({'count':['mean','std']})
 	avgProp.columns = avgProp.columns.droplevel(0)
 	avgProp.reset_index(inplace=True)
 
+	print(avgProp)
 	return avgProp
 
 	# avgProp.head(100)
 
-def plotPropTime(df, topology, parameter, parameter_name):
+def plotBandwidth(df, topology, parameter, parameter_name):
 
 	y_labels = df[parameter].astype(str).to_numpy()
 	# print(y_labels)
@@ -83,7 +149,7 @@ def plotPropTime(df, topology, parameter, parameter_name):
 
 	plt.rcParams.update({'figure.figsize':(7,5), 'figure.dpi':100})
 
-	plt.gca().set(title='Propagation time by '+parameter_name, ylabel='parameter', xlabel="Time [s]")
+	plt.gca().set(title='Bandwidth by '+parameter_name, ylabel='parameter', xlabel="Time [s]")
 
 	plt.rcParams.update({'font.size': 14})
 	# plt.hist([x1, x2, x6], **kwargs, label=['GS 1 topic', 'Vanilla', 'Squelching'])
@@ -103,8 +169,8 @@ def plotPropTime(df, topology, parameter, parameter_name):
 	ax.set_ylabel(parameter_name)
 
 
-	fig.savefig('./figures/propTime_'+topology+'_'+parameter+'.pdf', format='pdf', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
-	fig.savefig('./figures/propTime_'+topology+'_'+parameter+'.png', format='png', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
+	fig.savefig('./figures/bandwidth_'+topology+'_'+parameter+'.pdf', format='pdf', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
+	fig.savefig('./figures/bandwidth_'+topology+'_'+parameter+'.png', format='png', facecolor='white', edgecolor='none', bbox_inches='tight', dpi=600)
 
 
 	plt.show()
@@ -154,7 +220,7 @@ end_time = 1691767949
 #############################################
 #	Query experiments file and influx to get all the data
 #############################################
-experiments = functions.experiment(start_time, end_time, './experiments.csv')
+experiments = functions.experiment(start_time, end_time, './experiments_10_aug.csv')
 print(experiments)
 
 #############################################
@@ -167,13 +233,13 @@ with open('bargraphs_parameters.csv', 'r') as file:
     for graph in data:
         print(graph)
         print("Influx query")
-        published 	= functions.from_influx(url, token, org, "publishMessage", graph['start'], graph['end'], graph['grouping_key'])
-        received 	= functions.from_influx(url, token, org, "deliverMessage", graph['start'], graph['end'], graph['grouping_key'])
+        rpc  		= functions.from_influx(url, token, org, "recvRPC", graph['start'], graph['end'], '_measurement')
+        received 	= functions.from_influx(url, token, org, "deliverMessage", graph['start'], graph['end'], '_measurement')
 
         exp = experiments.loc[experiments['topology'] == graph['topology']]
-        df = calcAverageTime(published, received, exp, graph['parameter'])
+        df = calcBandwidth(received, rpc, exp, graph['parameter'])
         print("Data tratead")
 
-        plotPropTime(df,graph['topology'], graph['parameter'],graph['parameter_name'])
+        plotBandwidth(df,graph['topology'], graph['parameter'],graph['parameter_name'])
 
         print("Graph generated")
