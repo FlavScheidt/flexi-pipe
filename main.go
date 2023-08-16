@@ -54,6 +54,8 @@ func main() {
   	runtime := flag.Duration("runtime", 1800*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
   	// runtime := flag.Duration("runtime", 100*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
 
+  	parameter := flag.String("parameter", "interval", "Parameter to be analyzed. Default is interval")
+
     d 				:= flag.String("d", "8", " sets the optimal degree for a GossipSub topic mesh")
     dlo 			:= flag.String("dlo", "6", " Dlo sets the lower bound on the number of peers we keep in a GossipSub topic mesh")
     dhi 			:= flag.String("dhi", "12", "Dhi sets the upper bound on the number of peers we keep in a GossipSub topic mesh")
@@ -234,6 +236,7 @@ func main() {
 	        gossipFactor: 	*gossipFactor,
 	        initialDelay:	*initialDelay,
 			interval:		*interval,
+			parameter:		*parameter,
 	    }
 
 	    // Create struct with experiment info for the database
@@ -291,6 +294,7 @@ func main() {
 								experiment.end.String(), 
 								experiment.topology, 
 								strconv.FormatUint(experiment.runtime, 10),
+								experiment.overlayParams.parameter,
 								experiment.overlayParams.d,
 								experiment.overlayParams.dlo,
 								experiment.overlayParams.dhi,
