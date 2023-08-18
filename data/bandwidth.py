@@ -220,8 +220,18 @@ end_time = 1692166070
 #############################################
 #	Query experiments file and influx to get all the data
 #############################################
-experiments = functions.experiment(start_time, end_time, './experiments_10_aug.csv')
+experiments = functions.experiment(start_time, end_time, './experiments.csv')
 print(experiments)
+
+#############################################
+#   Start and end for reference and executions
+#############################################
+ref = experiments.loc[experiments["parameter"] == "reference"]
+start_reference = ref["startUnix"].min().astype(int)
+end_reference = ref["endUnix"].max().astype(int)
+
+reference 		= functions.from_influx(url, token, org, "deliverMessage", start_reference, end_reference, "_measurement")
+reference_rpc 	= functions.from_influx(url, token, org, "recvRPC", start_reference, end_reference, "_measurement")
 
 #############################################
 #	Loop to procces each graph
@@ -232,11 +242,26 @@ with open('bargraphs_parameters.csv', 'r') as file:
     data = list(reader)
     for graph in data:
         print(graph)
+            
+        #Get start and end time
+        par = experiments.loc[experiments["parameter"] == graph["parameter"]]
+        start_query = par["startUnix"].min().astype(int)
+        end_query = par["endUnix"].max().astype(int)
+
         print("Influx query")
-        rpc  		= functions.from_influx(url, token, org, "recvRPC", graph['start'], graph['end'], '_measurement')
-        received 	= functions.from_influx(url, token, org, "deliverMessage", graph['start'], graph['end'], '_measurement')
+        rpc  		= functions.from_influx(url, token, org, "recvRPC", start_query, end_query, '_measurement')
+        received 	= functions.from_influx(url, token, org, "deliverMessage",start_query, end_query, '_measurement')
+
+        # print(rpc)
+        # print(received)
 
         exp = experiments.loc[experiments['topology'] == graph['topology']]
+        exp = exp.loc[exp['parameter'] == graph['parameter']]
+        exp = pd.concat([exp, ref])
+
+        received 	= pd.concat([received, reference])
+        rpc 		= pd.concat([rpc, reference_rpc])
+
         df = calcBandwidth(received, rpc, exp, graph['parameter'])
         print("Data tratead")
 

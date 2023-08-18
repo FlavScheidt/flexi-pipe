@@ -258,29 +258,49 @@ experiments = functions.experiment(start_time, end_time, './experiments.csv')
 print(experiments)
 
 #############################################
+#   Start and end for reference and executions
+#############################################
+ref = experiments.loc[experiments["parameter"] == "reference"]
+start_reference = ref["startUnix"].min().astype(int)
+end_reference = ref["endUnix"].max().astype(int)
+
+#############################################
 #	Loop to procces each graph
 #############################################
-# oldMeasurement = ''
+oldMeasurement = ''
 with open('graphs_parameters.csv', 'r') as file:
     reader = csv.DictReader(file)
     data = list(reader)
-    # print(data)
+
     for graph in data:
         print(graph)
-        # if graph['measurement'] != oldMeasurement:
+
+        if graph['measurement'] != oldMeasurement:
+            reference = functions.from_influx(url, token, org, graph['measurement'], start_reference, end_reference, graph['grouping_key'])
+            
+        #Get start and end time
+        par = experiments.loc[experiments["parameter"] == graph["parameter"]]
+        start_query = par["startUnix"].min().astype(int)
+        end_query = par["endUnix"].max().astype(int)
+
         print("Influx query")
-        traces = functions.from_influx(url, token, org, graph['measurement'], graph['start'], graph['end'], graph['grouping_key'])
+        traces = functions.from_influx(url, token, org, graph['measurement'], start_query, end_query, graph['grouping_key'])
 
         exp = experiments.loc[experiments['topology'] == graph['topology']]
-        gb = group_time(traces, exp, graph['parameter'], graph['grouping_key'], graph['start'], graph['end'])
+        exp = exp.loc[exp['parameter'] == graph['parameter']]
+        exp = pd.concat([exp, ref])
+        print(exp)
 
+        traces = pd.concat([reference, traces])
+        print(traces)
+
+        gb = group_time(traces, exp, graph['parameter'], graph['grouping_key'], start_reference, end_query)
         print("Data tratead")
 
         generate_graph(graph['measurement'], graph['measurement_name'], graph['topology'], gb, graph['parameter'],graph['parameter_name'])
-
         print("Graph generated")
 
-        # oldMeasurement = graph['measurement']
+        oldMeasurement = graph['measurement']
 
 
 # #get topology

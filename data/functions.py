@@ -51,7 +51,7 @@ def experiment(start_time, end_time, filepath):
     df = pd.DataFrame(data)
 
     #Rename columns
-    experiments = df.rename(columns={0: "start", 1: "end", 2: "topology", 3: "runtime", 4: "d", 5: "dlo", 6: "dhi", 7: "dscore", 8: "dlazy", 9: "dout", 10: "gossipFactor", 11: "initialDelay", 12: "interval"}, errors='raise')
+    experiments = df.rename(columns={0: "start", 1: "end", 2: "topology", 3: "runtime", 4: "parameter", 5: "d", 6: "dlo", 7: "dhi", 8: "dscore", 9: "dlazy", 10: "dout", 11: "gossipFactor", 12: "initialDelay", 13: "interval"}, errors='raise')
 
     #Correct timestamp
     experiments["start"] = experiments["start"].str.slice(0, 27)

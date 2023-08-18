@@ -158,6 +158,16 @@ experiments = functions.experiment(start_time, end_time, './experiments.csv')
 print(experiments)
 
 #############################################
+#   Start and end for reference and executions
+#############################################
+ref = experiments.loc[experiments["parameter"] == "reference"]
+start_reference = ref["startUnix"].min().astype(int)
+end_reference = ref["endUnix"].max().astype(int)
+
+ref_published 		= functions.from_influx(url, token, org, "deliverMessage", start_reference, end_reference, "messageID")
+ref_delivered 		= functions.from_influx(url, token, org, "publishMessage", start_reference, end_reference, "messageID")
+
+#############################################
 #	Loop to procces each graph
 #############################################
 # oldMeasurement = ''
@@ -166,11 +176,23 @@ with open('bargraphs_parameters.csv', 'r') as file:
     data = list(reader)
     for graph in data:
         print(graph)
+
+        #Get start and end time
+        par = experiments.loc[experiments["parameter"] == graph["parameter"]]
+        start_query = par["startUnix"].min().astype(int)
+        end_query = par["endUnix"].max().astype(int)
+
         print("Influx query")
-        published 	= functions.from_influx(url, token, org, "publishMessage", graph['start'], graph['end'], graph['grouping_key'])
-        received 	= functions.from_influx(url, token, org, "deliverMessage", graph['start'], graph['end'], graph['grouping_key'])
+        published 	= functions.from_influx(url, token, org, "publishMessage", start_query, end_query, "messageID")
+        received 	= functions.from_influx(url, token, org, "deliverMessage", start_query, end_query, "messageID")
 
         exp = experiments.loc[experiments['topology'] == graph['topology']]
+        exp = exp.loc[exp['parameter'] == graph['parameter']]
+        exp = pd.concat([exp, ref])
+
+        received 		= pd.concat([received, ref_delivered])
+        published 		= pd.concat([published, ref_published])
+        
         df = calcAverageTime(published, received, exp, graph['parameter'])
         print("Data tratead")
 
