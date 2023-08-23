@@ -54,7 +54,7 @@ func main() {
   	runtime := flag.Duration("runtime", 1800*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
   	// runtime := flag.Duration("runtime", 100*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
 
-  	parameter := flag.String("parameter", "interval", "Parameter to be analyzed. Default is interval")
+  	parameter := flag.String("parameter", "reference", "Parameter to be analyzed. Default is interval")
 
     d 				:= flag.String("d", "8", " sets the optimal degree for a GossipSub topic mesh")
     dlo 			:= flag.String("dlo", "6", " Dlo sets the lower bound on the number of peers we keep in a GossipSub topic mesh")

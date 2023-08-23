@@ -58,8 +58,11 @@ def experiment(start_time, end_time, filepath):
     experiments["end"] = experiments["end"].str.slice(0, 27)
 
     #String to timestamp
-    experiments['startUnix'] = pd.to_datetime(experiments["start"],format="%Y-%m-%d %H:%M:%S.%f").astype('int64') / 10**9
-    experiments['endUnix'] = pd.to_datetime(experiments["end"],format="%Y-%m-%d %H:%M:%S.%f").astype('int64') / 10**9
+    # experiments['startUnix'] = pd.to_datetime(experiments["start"],format="%Y-%m-%d %H:%M:%S.%f").astype('int64') / 10**9
+    # experiments['endUnix'] = pd.to_datetime(experiments["end"],format="%Y-%m-%d %H:%M:%S.%f").astype('int64') / 10**9
+    experiments['startUnix'] = pd.to_datetime(experiments["start"],format="mixed").astype('int64') / 10**9
+    experiments['endUnix'] = pd.to_datetime(experiments["end"],format="mixed").astype('int64') / 10**9
+
 
     experiments['startUnix'] = pd.to_timedelta(experiments['startUnix'], unit='s').dt.total_seconds().astype(int)#.astype(str)
     experiments['endUnix'] = pd.to_timedelta(experiments['endUnix'], unit='s').dt.total_seconds().astype(int)#.astype(str)
