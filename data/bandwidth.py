@@ -23,7 +23,6 @@ import functions
 
 
 def calcBandwidth(message, rpc, expTime, parameter):
-
 	message = message[['_time', '_measurement']].reset_index(drop=True)
 	rpc = rpc[['_time', '_measurement']].reset_index(drop=True)
 
@@ -37,98 +36,102 @@ def calcBandwidth(message, rpc, expTime, parameter):
 	expTime.to_sql('expTime', conn, index=False)
 
 	qry = '''
-	    select  
-	        df._time,
-	        df._measurement,
-	        expTime.experiment,
-	        expTime.'''+parameter+'''
-	    from
-	        df join expTime on
-	        df._time between expTime.start and expTime.end
-	    '''
+	            select  
+	                df._time,
+	                expTime.start as min,
+	                expTime.end as max,
+	                expTime.experiment,
+	                expTime.'''+parameter+''',
+	                df._measurement
+	            from
+	                df join expTime on
+	                df._time between expTime.start and expTime.end
+		    '''
 	dfNew = pd.read_sql_query(qry, conn)
+	dfNew = dfNew.set_index('experiment')#.rename(columns={"_time": "min"})#.drop(columns=["messageID"])
 
-	dfNew = dfNew.set_index('experiment').rename(columns={"_time": "min"})#.drop(columns=["messageID"])
-
+	#dfNew['min'] = 
 	dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
-	# dfNew['_min'] = pd.to_datetime(dfNew["_min"])
+	dfNew['max'] = pd.to_datetime(dfNew["max"], format='mixed')
+	dfNew['_time'] = pd.to_datetime(dfNew["_time"], format='mixed')
 
 	#Try resampling for every seconds
 	dfNoIndex = dfNew.reset_index()
 	# dfNoIndex.head(10)
 
-	by_time = dfNoIndex.groupby([dfNoIndex['experiment'],dfNoIndex[parameter],pd.Grouper(key="min", freq='1s')])['_measurement'].count().reset_index()
+	by_time = dfNoIndex.groupby([dfNoIndex['experiment'],dfNoIndex[parameter],dfNoIndex["min"],dfNoIndex["max"],pd.Grouper(key="_time", freq='1s')])["_measurement"].count().reset_index()
 	dfAggTime = by_time.rename(columns={"_measurement": "count"})
 
-	print(dfAggTime)
-
-	# Fill the voids
-	minTime = dfAggTime.groupby(['experiment']).agg('min').drop(columns=['count'])
-	maxTime = dfAggTime.groupby(['experiment']).agg('max').drop(columns=['count'])
-	# maxTime.head(10)
-
-	minMax = minTime.merge(maxTime, on=['experiment']).rename(columns={"min_x": "min", "min_y": "max", parameter+"_x": parameter}).drop(columns=[parameter+'_y']).reset_index()
-	# minMax.head(10)
-
-	date_list = pd.date_range(minMax['min'].min(), minMax['max'].max(),freq='1s')
+	date_list = pd.date_range(dfAggTime['min'].min(), dfAggTime['max'].max(),freq='1s',tz=None)
 
 	dates = pd.DataFrame(date_list).rename(columns={0:"_time"})
 	dates['count'] = 0
 
-	#Make the db in memory
-	conn = sqlite3.connect(':memory:')
-	#write the tables
-	minMax.to_sql('minMax', conn, index=False)
+	dates['_time'] = pd.to_datetime(dates["_time"], format='mixed')#.tz_localize(None)
+	dfAggTime['_time'] = pd.to_datetime(dfAggTime["_time"], format='mixed')#.tz_localize(None)
+	dfAggTime['min'] = pd.to_datetime(dfAggTime["min"], format='mixed')#.tz_localize(None)
+	dfAggTime['max'] = pd.to_datetime(dfAggTime["max"], format='mixed')#.tz_localize(None)
+
+	dates["_time"] = dates["_time"].dt.tz_localize(None)
+	dfAggTime["_time"] = dfAggTime["_time"].dt.tz_localize(None)
+	dfAggTime["min"] = dfAggTime["min"].dt.tz_localize(None)
+	dfAggTime["max"] = dfAggTime["max"].dt.tz_localize(None)
+
+ 	#write the tables
+	dfAggTime.to_sql('aggTime', conn, index=False)
 	dates.to_sql('dates', conn, index=False)
 
 	qry = '''
-	    select  
-	        dates._time as _time,
-	        minMax.'''+parameter+''',
-	        minMax.experiment,
-	        dates.count
-	    from
-	        dates join minMax on
-	        dates._time between minMax.min and minMax.max
-	    '''
+	        select distinct
+	            dates._time as _time,
+	            aggTime.min,
+	            aggTime.max,
+	            aggTime.'''+parameter+''',
+	            aggTime.experiment,
+	            dates.count
+	        from
+	            dates join aggTime on
+	            dates._time between aggTime.min and aggTime.max
+	        '''
 	dfFill = pd.read_sql_query(qry, conn)
-	# dfFill.head(10)
-	# print(dfFill)
-	# print(dfAggTime)
+
+	dfFill['_time'] = pd.to_datetime(dfFill["_time"], format='mixed')#.tz_localize(None)
+	dfAggTime['_time'] = pd.to_datetime(dfAggTime["_time"], format='mixed')#.tz_localize(None)
+
+	dfFill["_time"] = dfFill["_time"].dt.tz_localize(None)
+	dfAggTime["_time"] = dfAggTime["_time"].dt.tz_localize(None)
 
 	#write the tables
 	dfFill.to_sql('fill', conn, index=False)
-	dfAggTime.to_sql('df', conn, index=False)
+	dfAggTime.to_sql('agg', conn, index=False)
 
 	qry = '''
-	    select
-	       experiment,
-	       '''+parameter+''',
-	       _time as min,
-	       count
-	    from fill
-	    where fill._time not in (SELECT DISTINCT min FROM df)
-	    '''
+	        select distinct
+	           experiment,
+	           '''+parameter+''',
+	           _time,
+	           count
+	        from fill
+	        where fill._time not in (SELECT DISTINCT _time FROM agg)
+	        '''
 	dfMissingTime = pd.read_sql_query(qry, conn).reset_index(drop=True).drop_duplicates()
-	# print(dfMissingTime)
-	dfMissingTime['min'] = pd.to_datetime(dfMissingTime["min"], format='mixed')
 	# dfNew['min'] = pd.to_datetime(dfNew["min"], format='mixed')
 
-	dfAggTime =  pd.concat([dfMissingTime.reset_index(drop=True), dfAggTime.reset_index(drop=True)]).sort_values(by=['min'])
-	df = dfAggTime.drop(columns=['min'])
-
+	df = pd.concat([dfMissingTime.reset_index(drop=True), dfAggTime.drop(columns=['min','max']).reset_index(drop=True)])#.sort_values(by=['_time'])
+	df["_time"] = pd.to_datetime(df["_time"], format='mixed')
+	df = df.sort_values(by=['_time']).drop_duplicates()
+	
 	avgPropExp = df.groupby(['experiment']).agg('mean')
 	avgPropExp.reset_index(inplace=True)
 	avgPropExp = avgPropExp.drop(columns=['experiment'])
 
 	# avgPropExp.head(10)
-	print(avgPropExp)
+	# print(avgPropExp)
 
 	avgProp = avgPropExp.groupby([parameter]).agg({'count':['mean','std']})
 	avgProp.columns = avgProp.columns.droplevel(0)
 	avgProp.reset_index(inplace=True)
 
-	print(avgProp)
 	return avgProp
 
 	# avgProp.head(100)
@@ -203,8 +206,8 @@ url = "http://localhost:8086"
 #############################################
 #	Global start and end time
 #############################################
-start_time = 1692015275
-end_time = 1692166070
+start_time = 1692978196
+end_time = 1693129062
 
 #############################################
 #	Graphs to generate

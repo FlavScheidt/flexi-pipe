@@ -23,13 +23,12 @@ import functions
 
 
 def calcAverageTime(publish, received, expTime, parameter):
-
 	publish = publish[['_time', 'messageID']]
 	received = received[['_time', 'messageID']]
 
 	joined = publish.merge(received, on=['messageID'])
 	joined['diff'] = ((joined['_time_y'] - joined['_time_x'])/ pd.Timedelta(microseconds=1)).astype(int)
-	# joined.head(10)
+	joined = joined.loc[joined["diff"] >= 0].dropna()
 
 	#Make the db in memory
 	conn = sqlite3.connect(':memory:')
@@ -38,18 +37,18 @@ def calcAverageTime(publish, received, expTime, parameter):
 	expTime.to_sql('expTime', conn, index=False)
 
 	qry = '''
-	    select  
-	        joined._time_x,
-	        joined.diff,
-	        joined.messageID,
-	        expTime.experiment,
-	        expTime.'''+parameter+'''
-	    from
-	        joined join expTime on
-	        joined._time_x between expTime.start and expTime.end
-	    '''
+		    select  
+		        joined._time_x,
+		        joined.diff,
+		        joined.messageID,
+		        expTime.experiment,
+		        expTime.'''+parameter+'''
+		    from
+		        joined join expTime on
+		        joined._time_x between expTime.start and expTime.end
+		    '''
 	dfNew = pd.read_sql_query(qry, conn)
-	dfNew = dfNew.set_index('experiment').rename(columns={"_time_x": "_time"})#.drop(columns=["messageID"])
+	dfNew = dfNew.set_index('experiment').rename(columns={"_time_x": "_time"}).dropna()#.drop(columns=["messageID"])
 	# dfNew.head(20)
 
 	#Average propagation time per interval
@@ -58,8 +57,9 @@ def calcAverageTime(publish, received, expTime, parameter):
 	avgPropExp = df.groupby(['experiment']).agg('mean')
 	avgPropExp.reset_index(inplace=True)
 	avgPropExp = avgPropExp.drop(columns=['experiment'])
+	# avgPropExp.head(10)
 
-	avgProp = avgPropExp.groupby([parameter]).agg({'diff':['mean','std']})
+	avgProp = avgPropExp.groupby([parameter]).agg({'diff':['mean','std']}).fillna(0)
 	avgProp.columns = avgProp.columns.droplevel(0)
 	avgProp.reset_index(inplace=True)
 
@@ -137,8 +137,8 @@ url = "http://localhost:8086"
 #############################################
 #	Global start and end time
 #############################################
-start_time = 1692015275
-end_time = 1692166070
+start_time = 1692978196
+end_time = 1693129062
 
 #############################################
 #	Graphs to generate
