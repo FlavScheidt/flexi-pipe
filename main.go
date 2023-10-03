@@ -267,7 +267,7 @@ func main() {
 		//Connect and send transactions
 		for _, hostname := range hosts {
 			log.Println("Sending transactions GossipSub")
-			go runTransactions(hostname, runtime, config)
+			go runTransactions(hostname, runTime, config)
 		}
 
 		time.Sleep(runTime)
