@@ -37,6 +37,8 @@ var DATA_PATH=PATH+"data/"
 
 var NODES_CONFIG=PATH+"rippledTools/ConfigCluster/ClusterConfig.csv"
 
+var RIPPLED_LOG="/root/var/log/rippled/"
+
 var PUPPET="liberty"
 
 // var experiment="unl"
@@ -220,6 +222,9 @@ func main() {
 		}
 
 		log.Println("I am ", hostname)
+
+		//Load rippled consensus logs
+		loadLogs(hostname, writeClient)
 
 		//Load the traces
 		loadTraces(hostname, writeClient)
