@@ -8,7 +8,7 @@ from xrpl.constants import CryptoAlgorithm
 
 
 #Connect
-JSON_RPC_URL = "http://192.168.20.59:5005/"
+JSON_RPC_URL = "http://localhost:5005/"
 client = JsonRpcClient(JSON_RPC_URL)
 
 #Generate wallets
