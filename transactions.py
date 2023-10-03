@@ -19,7 +19,7 @@ client = JsonRpcClient(JSON_RPC_URL)
 # account1 = wallet1.address
 # account2 = wallet2.address
 
-wallet1 = Wallet.from_seed(seed="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh", algorithm=CryptoAlgorithm.SECP256K1)
+wallet1 = Wallet.from_seed(seed="snoPBrXtMeMyMHUVTgbuqAfg1SUTb", algorithm=CryptoAlgorithm.SECP256K1)
 print(wallet1.address) # "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH"
 
 #Prepare payment
