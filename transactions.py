@@ -1,3 +1,4 @@
+import xrpl
 from xrpl.clients import JsonRpcClient
 from xrpl.wallet import generate_faucet_wallet
 from xrpl.models.transactions import Payment
@@ -7,7 +8,7 @@ from xrpl.constants import CryptoAlgorithm
 
 
 #Connect
-JSON_RPC_URL = "http://localhost:5005/"
+JSON_RPC_URL = "http://192.168.20.59:5005/"
 client = JsonRpcClient(JSON_RPC_URL)
 
 #Generate wallets
@@ -23,7 +24,7 @@ print(wallet1.address) # "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH"
 
 #Prepare payment
 my_payment = xrpl.models.transactions.Payment(
-    account=account1,
+    account=wallet1.address,
     amount=xrpl.utils.xrp_to_drops(22),
     destination="rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 )
@@ -32,7 +33,9 @@ print("Payment object:", my_payment)
 # Sign transaction
 signed_tx = xrpl.transaction.autofill_and_sign(
         my_payment, client, wallet1)
+
 max_ledger = signed_tx.last_ledger_sequence
+
 tx_id = signed_tx.get_hash()
 
 print("Signed transaction:", signed_tx)
