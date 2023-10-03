@@ -6,26 +6,24 @@ from xrpl.utils import xrp_to_drops
 from xrpl.wallet import Wallet
 from xrpl.constants import CryptoAlgorithm
 
+import random
+
+#Randomize value
+value = random.randint(1, 10)
+
 
 #Connect
 JSON_RPC_URL = "http://localhost:5005/"
 client = JsonRpcClient(JSON_RPC_URL)
 
-#Generate wallets
-# wallet1 = generate_faucet_wallet(client, debug=True)
-# wallet2 = generate_faucet_wallet(client, debug=True)
-
-#Get account numbers
-# account1 = wallet1.address
-# account2 = wallet2.address
-
+#Generate wallet
 wallet1 = Wallet.from_seed(seed="snoPBrXtMeMyMHUVTgbuqAfg1SUTb", algorithm=CryptoAlgorithm.SECP256K1)
 print(wallet1.address) # "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH"
 
 #Prepare payment
 my_payment = xrpl.models.transactions.Payment(
     account=wallet1.address,
-    amount=xrpl.utils.xrp_to_drops(22),
+    amount=xrpl.utils.xrp_to_drops(value),
     destination="rnW7CM4K6FcKbW2NcC8j2TQFXn3FAHdwby",
 )
 print("Payment object:", my_payment)

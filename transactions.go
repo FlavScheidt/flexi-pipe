@@ -1,13 +1,9 @@
 package main
 
 import (
-    // "bytes"
-    // "fmt"
-    // "io"
-    // "io/ioutil"
-    // "os"
     "time"
     // "log"
+    // "math/rand"
 
 
 	"golang.org/x/crypto/ssh"
