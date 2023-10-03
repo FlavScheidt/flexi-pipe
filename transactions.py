@@ -11,18 +11,21 @@ JSON_RPC_URL = "http://localhost:5005/"
 client = JsonRpcClient(JSON_RPC_URL)
 
 #Generate wallets
-wallet1 = generate_faucet_wallet(client, debug=True)
-wallet2 = generate_faucet_wallet(client, debug=True)
+# wallet1 = generate_faucet_wallet(client, debug=True)
+# wallet2 = generate_faucet_wallet(client, debug=True)
 
 #Get account numbers
-account1 = wallet1.address
-account2 = wallet2.address
+# account1 = wallet1.address
+# account2 = wallet2.address
+
+wallet1 = Wallet.from_seed(seed="sn3nxiW7v8KXzPzAqzyHXbSSKNuN9", algorithm=CryptoAlgorithm.SECP256K1)
+print(wallet1.address) # "rMCcNuTcajgw7YTgBy1sys3b89QqjUrMpH"
 
 #Prepare payment
 my_payment = xrpl.models.transactions.Payment(
     account=account1,
     amount=xrpl.utils.xrp_to_drops(22),
-    destination=account2,
+    destination="rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
 )
 print("Payment object:", my_payment)
 
