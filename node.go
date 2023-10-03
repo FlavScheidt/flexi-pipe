@@ -91,4 +91,13 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
         writeAPI.WritePoint(point)
         writeAPI.Flush()
     }
+
+    //Remove temp file
+    cmd := "rm -rf log_temp.out"
+    
+    _, err := exec.Command("bash","-c",cmd).Output()
+    if err != nil {
+        log.Printf("Failed to execute command: %s", cmd)
+        return
+    }
 }
