@@ -259,10 +259,15 @@ func main() {
 				" -initialDelay="+param.initialDelay+
 				" -interval="+param.interval+"\n"
 
-		log.Println(gossipsub)
 		for _, hostname := range hosts {
 			log.Println("Starting GossipSub")
 			go executeCmd(gossipsub, hostname, config)
+		}
+
+		//Connect and send transactions
+		for _, hostname := range hosts {
+			log.Println("Sending transactions GossipSub")
+			go runTransactions(hostname, runtime, config)
 		}
 
 		time.Sleep(runTime)
