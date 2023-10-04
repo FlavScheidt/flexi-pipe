@@ -197,7 +197,7 @@ func main() {
     		go runPuppet(topology, config, timeout, param) //, runTime)
 
     		//Start rippled monitor
-    		// go rippledMonitor(hosts, config, runTime)
+    		go rippledMonitor(hosts, config, runTime)
 
     		time.Sleep(runTime)
 
@@ -270,10 +270,10 @@ func main() {
 		}
 
 		//Connect and send transactions
-		// for _, hostname := range hosts {
-		// 	log.Println("Sending transactions GossipSub")
-		// 	go runTransactions(hostname, runTime, config)
-		// }
+		for _, hostname := range hosts {
+			log.Println("Sending transactions GossipSub")
+			go runTransactions(hostname, runTime, config)
+		}
 
 		time.Sleep(runTime)
 
@@ -284,8 +284,10 @@ func main() {
 			go executeCmd(kill, hostname, config)
 		}
 
+		log.Println("finished")
+
 		experiment.end = time.Now()
-		time.Sleep(100 * time.Second)
+		time.Sleep(10 * time.Second)
 
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
