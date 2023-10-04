@@ -72,6 +72,7 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
     for _, record := range records {
 
         timestamp, err := time.Parse("2006-Jan-01.15:04:05.000000000", record[0])
+        log.Println("Datetime:", timestamp.String())
         if err != nil {
             fmt.Println(err)
         }
