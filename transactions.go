@@ -2,7 +2,7 @@ package main
 
 import (
     "time"
-    // "log"
+    "log"
     // "math/rand"
 
 
@@ -19,8 +19,8 @@ func runTransactions(hostname string, runtime time.Duration, config *ssh.ClientC
     cmd := "cd "+PATH+" && python3 transactions.py"
 
     for start := time.Now(); time.Since(start) < duration; {
-        go executeCmd(cmd, hostname, config)
-
+        executeCmd(cmd, hostname, config)
+        log.Println("Trasaction completed")
         time.Sleep(1*time.Second)
     }
 }
