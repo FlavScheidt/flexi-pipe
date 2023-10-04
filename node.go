@@ -72,7 +72,7 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
     for _, record := range records {
 
         timestamp, err := time.Parse("2006-Jan-01.15:04:05.000000000", record[0])
-        log.Println("Datetime:", timestamp.Unix().String())
+        log.Println("Datetime:", timestamp.String(), record[1])
         if err != nil {
             fmt.Println(err)
         }
@@ -87,7 +87,7 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
                 // "size": size,
                 "ledger": record[1],
             },
-            timestamp.Unix())
+            timestamp)
 
         writeAPI.WritePoint(point)
         writeAPI.Flush()
