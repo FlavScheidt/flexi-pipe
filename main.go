@@ -270,10 +270,10 @@ func main() {
 		}
 
 		//Connect and send transactions
-		for _, hostname := range hosts {
-			log.Println("Sending transactions GossipSub")
-			go runTransactions(hostname, runTime, config)
-		}
+		// for _, hostname := range hosts {
+		// 	log.Println("Sending transactions GossipSub")
+		// 	go runTransactions(hostname, runTime, config)
+		// }
 
 		time.Sleep(runTime)
 
@@ -290,6 +290,7 @@ func main() {
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
 	    // -----------------------------------------
+	    log.Println("Load experiment data into csv")
 	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 		if err != nil {
 			log.Println(err)
