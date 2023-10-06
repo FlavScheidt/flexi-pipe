@@ -8,13 +8,15 @@ import (
     // "os"
     "time"
     "log"
+    // "os/exec"
 
+    // influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 
 	"golang.org/x/crypto/ssh"
 	// kh "golang.org/x/crypto/ssh/knownhosts"
 )
 
-func runPuppet(experiment string, config *ssh.ClientConfig, duration time.Duration, param OverlayParams) {
+func runPuppet(experiment string, config *ssh.ClientConfig, duration time.Duration, param OverlayParams){ //, runTime time.Duration) {
 
     results := make(chan string, 10)
     timeout := time.After(duration)
@@ -46,3 +48,5 @@ func runPuppet(experiment string, config *ssh.ClientConfig, duration time.Durati
             return
     }
 }
+
+

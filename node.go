@@ -41,7 +41,7 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
     log.Println("Enter loadLogs")
 
     //Format file for loading
-    cmd := "cat "+RIPPLED_LOG+"debug.log | grep 'LedgerConsensus' | grep 'Built ledger' | cut -d ' ' -f1,2,7 | sed 's/.$//' |  sed 's/#//' | sed 's/ /./' | sed 's/ /,/' > log_temp.out"
+    cmd := "cat "+RIPPLED_LOG+"debug.log | grep 'LedgerConsensus' | grep 'Built ledger' | cut -d ' ' -f1,2,7 | sed 's/.$//' |  sed 's/#//' | sed 's/ /./' | sed 's/ /,/' | sed 's/\\./ /' > log_temp.out"
     
     _, err := exec.Command("bash","-c",cmd).Output()
     if err != nil {
@@ -71,7 +71,8 @@ func loadLogs(hostname string,  writeClient influxdb2.Client) {
 
     for _, record := range records {
 
-        timestamp, err := time.Parse("2006-Jan-01.15:04:05.000000000", record[0])
+        timestamp, err := time.Parse("2006-Jan-02 15:04:05.000000000", record[0])
+        log.Println("Datetime:", timestamp.String(), record[1])
         if err != nil {
             fmt.Println(err)
         }

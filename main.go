@@ -53,7 +53,7 @@ func main() {
 	machineFlag 	:= flag.String("machine", "master", "Is this machine a master or a puppet? Deafult is master")
   	experimentType 	:= flag.String("type", "unl", "Type of experiment. Default is unl")
 
-  	runtime := flag.Duration("runtime", 1800, "Time for each test, counting from the start of gossipsub. Default is 1800 (30 min)")
+  	runtime := flag.Duration("runtime", 1800*time.Second, "Time for each test, counting from the start of gossipsub. Default is 1800 (30 min)")
   	// runtime := flag.Duration("runtime", 900*time.Second, "Time for each test, counting from the start of gossipsub. Default is 900s (15 min)")
 
   	parameter := flag.String("parameter", "reference", "Parameter to be analyzed. Default is interval")
@@ -73,7 +73,7 @@ func main() {
 
 	machine 	:= strings.ToLower(*machineFlag)
 	topology 	:= strings.ToLower(*experimentType)
-	runTime 	:= (*runtime)*time.Second
+	runTime 	:= (*runtime) //*time.Second
 
 	// initialDelay 	:= (*InitialDelay)//*time.Millisecond
 	// interval 		:= (*Interval)//*time.Second
@@ -194,7 +194,7 @@ func main() {
 
 		    //Connect to puppet server and start GossipSub
 		    log.Println("Connecting to ", PUPPET)
-    		go runPuppet(topology, config, timeout, param)
+    		go runPuppet(topology, config, timeout, param) //, runTime)
 
     		//Start rippled monitor
     		go rippledMonitor(hosts, config, runTime)
@@ -284,12 +284,15 @@ func main() {
 			go executeCmd(kill, hostname, config)
 		}
 
+		log.Println("finished")
+
 		experiment.end = time.Now()
-		time.Sleep(100 * time.Second)
+		time.Sleep(10 * time.Second)
 
 	    // -----------------------------------------
 	    // 		Write experiment data to csv
 	    // -----------------------------------------
+	    log.Println("Load experiment data into csv")
 	    file, err := os.OpenFile(DATA_PATH+"experiments.csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0777)
 		if err != nil {
 			log.Println(err)
