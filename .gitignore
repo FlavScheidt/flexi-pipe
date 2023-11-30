@@ -22,3 +22,6 @@ go.work
 
 #Directories
 examples/
+
+# Python notebooks checkpoints files
+**/*.ipynb_checkpoints/
