@@ -25,3 +25,8 @@ examples/
 
 # Python notebooks checkpoints files
 **/*.ipynb_checkpoints/
+
+#Figures
+#*.pdf
+#*.jpg
+#*.png
