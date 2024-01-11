@@ -1,0 +1,20 @@
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-44f4cee3-7835-4e23-95ff-4e2c8d6f407b.json
+# GMT Mon Dec 18 19:44:43 2023
+# 
+d messageReceived dhi dscore ihave
+messageReceived
+graft messageReceived
+prune messageReceived graft ihave propagationTime
+iwant messageReceived graft prune ihave propagationTime
+dlo d messageReceived dhi dscore dlazy ihave dout
+dhi messageReceived ihave
+dscore messageReceived
+dlazy d messageReceived dhi dscore ihave
+ihave
+dout d messageReceived dscore dlazy ihave
+gossipFactor d messageReceived dhi dscore ihave dout interval
+interval messageReceived dhi dscore dlazy ihave
+topology messageReceived graft ihave
+propagationTime
+messageOverhead messageReceived ihave
+bandwidth messageOverhead

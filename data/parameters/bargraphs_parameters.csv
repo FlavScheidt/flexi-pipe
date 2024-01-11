@@ -1,0 +1,7 @@
+topology,parameter,parameter_name,grouping_key
+general,interval,Heartbeat,messageID
+general,d,D,messageID
+general,dlo,Dlo,messageID
+general,dscore,Dscore,messageID
+general,dlazy,Dlazy,messageID
+general,gossipFactor,Gossip Factor,messageID
