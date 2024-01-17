@@ -1,21 +1,22 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-4d3c13ff-89c4-4664-bfbc-df027645da01.json
-# GMT Thu Dec 21 21:13:44 2023
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-6994b53c-c2bf-4e10-b3cd-c80fe02b78b0.json
+# GMT Mon Jan 15 15:50:52 2024
 # 
-d messageReceived dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead bandwidth
-messageReceived iwant dscore ihave topology bandwidth
-graft prune bandwidth
-prune bandwidth
-iwant graft prune propagationTime bandwidth
-dlo d messageReceived dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead bandwidth
-dhi messageReceived prune dscore dlazy ihave dout gossipFactor interval topology bandwidth
-dscore topology bandwidth
-dlazy messageReceived dscore ihave dout topology propagationTime
-ihave messageReceived graft prune iwant dscore topology bandwidth
-dout messageReceived dscore ihave topology bandwidth
-gossipFactor messageReceived dscore dlazy ihave dout interval topology
-interval messageReceived iwant dscore dlazy ihave dout gossipFactor topology bandwidth
-topology messageReceived graft dscore bandwidth
+d dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead totalBandwidth messageBandwidth
+messageReceived
+graft messageReceived prune totalBandwidth
+prune messageReceived totalBandwidth
+iwant graft prune propagationTime totalBandwidth
+dlo d messageReceived dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead totalBandwidth messageBandwidth
+dhi messageReceived prune dscore dlazy ihave dout gossipFactor interval topology totalBandwidth messageBandwidth
+dscore messageReceived topology totalBandwidth
+dlazy messageReceived dscore ihave dout topology propagationTime messageBandwidth
+ihave messageReceived graft prune iwant dscore topology totalBandwidth messageBandwidth
+dout messageReceived dscore ihave topology totalBandwidth messageBandwidth
+gossipFactor dscore dlazy ihave dout interval topology messageBandwidth
+interval iwant dscore dlazy ihave dout gossipFactor topology totalBandwidth messageBandwidth
+topology messageReceived graft dscore ihave totalBandwidth
 propagationTime prune
-messageOverhead d messageReceived graft dhi dscore ihave dout gossipFactor interval topology bandwidth
-bandwidth
-rpcs d messageReceived graft iwant dscore dlazy ihave gossipFactor interval topology propagationTime messageOverhead bandwidth
+messageOverhead d messageReceived graft dhi dscore ihave dout gossipFactor interval topology totalBandwidth messageBandwidth
+totalBandwidth messageReceived
+gossipBandwidth d messageReceived graft iwant dscore dlazy ihave gossipFactor interval topology propagationTime messageOverhead totalBandwidth messageBandwidth
+messageBandwidth messageReceived iwant dscore ihave topology totalBandwidth
