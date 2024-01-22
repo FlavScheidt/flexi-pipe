@@ -1,21 +1,22 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-2f3a052b-f8b6-4f29-bec5-72a44279f8b1.json
-# GMT Thu Dec 21 20:35:17 2023
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-3a5a855c-8bea-448b-85a9-b111b20b1687.json
+# GMT Wed Jan 17 10:04:28 2024
 # 
-d messageReceived ihave messageOverhead bandwidth rpcs
-messageReceived iwant messageOverhead bandwidth rpcs
-graft prune iwant ihave rpcs
+d messageReceived ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+messageReceived ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+graft prune iwant ihave gossipBandwidth
 prune iwant ihave propagationTime
-iwant ihave
-dlo prune ihave propagationTime messageOverhead
-dhi messageReceived graft prune ihave propagationTime messageOverhead bandwidth
-dscore ihave messageOverhead bandwidth rpcs
-dlazy ihave propagationTime messageOverhead bandwidth
+iwant ihave propagationTime
+dlo prune ihave propagationTime messageOverhead messageBandwidth
+dhi messageReceived graft prune ihave propagationTime messageOverhead totalBandwidth messageBandwidth
+dscore ihave messageOverhead messageBandwidth
+dlazy ihave propagationTime messageOverhead totalBandwidth messageBandwidth
 ihave
-dout ihave
-gossipFactor ihave messageOverhead bandwidth rpcs
-interval messageReceived ihave messageOverhead bandwidth rpcs
-topology messageReceived graft iwant ihave messageOverhead bandwidth
-propagationTime iwant
-messageOverhead bandwidth rpcs
-bandwidth
-rpcs ihave topology propagationTime
+dout ihave messageBandwidth
+gossipFactor ihave messageOverhead totalBandwidth messageBandwidth
+interval ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+topology graft iwant ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+propagationTime
+messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+totalBandwidth
+gossipBandwidth ihave propagationTime totalBandwidth
+messageBandwidth iwant ihave totalBandwidth gossipBandwidth

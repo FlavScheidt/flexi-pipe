@@ -1,21 +1,22 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-44f4cee3-7835-4e23-95ff-4e2c8d6f407b.json
-# GMT Thu Dec 21 20:45:22 2023
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-354ed7e0-f1b2-4af6-bf52-011afd611e34.json
+# GMT Mon Jan 15 18:28:00 2024
 # 
-d messageReceived dhi dscore messageOverhead rpcs
-messageReceived messageOverhead bandwidth rpcs
-graft bandwidth rpcs
-prune graft ihave propagationTime bandwidth
-iwant messageReceived graft prune ihave propagationTime bandwidth rpcs
-dlo d messageReceived dhi dscore dlazy ihave dout messageOverhead rpcs
-dhi messageReceived ihave messageOverhead
-dscore messageReceived messageOverhead rpcs
-dlazy messageReceived dhi dscore ihave dout propagationTime messageOverhead
-ihave messageOverhead bandwidth rpcs
-dout messageReceived dscore ihave messageOverhead bandwidth rpcs
-gossipFactor d dlo dhi dscore dlazy ihave dout interval messageOverhead rpcs
-interval messageReceived dhi dscore ihave messageOverhead bandwidth rpcs
-topology messageReceived ihave messageOverhead bandwidth rpcs
+d dhi dscore messageOverhead gossipBandwidth messageBandwidth
+messageReceived ihave propagationTime messageOverhead totalBandwidth gossipBandwidth
+graft totalBandwidth gossipBandwidth
+prune graft ihave propagationTime totalBandwidth
+iwant graft prune ihave propagationTime totalBandwidth gossipBandwidth
+dlo d dhi dscore dlazy ihave dout messageOverhead gossipBandwidth messageBandwidth
+dhi ihave messageOverhead messageBandwidth
+dscore messageOverhead gossipBandwidth messageBandwidth
+dlazy dhi dscore ihave dout propagationTime messageOverhead messageBandwidth
+ihave messageOverhead totalBandwidth gossipBandwidth
+dout dscore ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+gossipFactor d dlo dhi dscore dlazy ihave dout interval messageOverhead gossipBandwidth
+interval dhi dscore ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+topology graft ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
 propagationTime
-messageOverhead bandwidth rpcs
-bandwidth rpcs
-rpcs
+messageOverhead totalBandwidth gossipBandwidth
+totalBandwidth gossipBandwidth
+gossipBandwidth
+messageBandwidth messageReceived ihave messageOverhead totalBandwidth gossipBandwidth
