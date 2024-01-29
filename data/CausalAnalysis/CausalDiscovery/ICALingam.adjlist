@@ -1,21 +1,13 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-44f4cee3-7835-4e23-95ff-4e2c8d6f407b.json
-# GMT Thu Dec 21 20:45:22 2023
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-2bcaf929-4fe4-47de-9a0e-eeb0dd801d1d.json
+# GMT Tue Jan 23 15:12:27 2024
 # 
-d messageReceived dhi dscore messageOverhead rpcs
-messageReceived messageOverhead bandwidth rpcs
-graft bandwidth rpcs
-prune graft ihave propagationTime bandwidth
-iwant messageReceived graft prune ihave propagationTime bandwidth rpcs
-dlo d messageReceived dhi dscore dlazy ihave dout messageOverhead rpcs
-dhi messageReceived ihave messageOverhead
-dscore messageReceived messageOverhead rpcs
-dlazy messageReceived dhi dscore ihave dout propagationTime messageOverhead
-ihave messageOverhead bandwidth rpcs
-dout messageReceived dscore ihave messageOverhead bandwidth rpcs
-gossipFactor d dlo dhi dscore dlazy ihave dout interval messageOverhead rpcs
-interval messageReceived dhi dscore ihave messageOverhead bandwidth rpcs
-topology messageReceived ihave messageOverhead bandwidth rpcs
+prune graft ihave
+graft totalBandwidth ihave
 propagationTime
-messageOverhead bandwidth rpcs
-bandwidth rpcs
-rpcs
+messageReceived messageOverhead gossipBandwidth messageBandwidth
+messageOverhead totalBandwidth ihave gossipBandwidth
+totalBandwidth ihave
+ihave gossipBandwidth
+gossipBandwidth
+iwant messageOverhead totalBandwidth
+messageBandwidth messageOverhead totalBandwidth ihave

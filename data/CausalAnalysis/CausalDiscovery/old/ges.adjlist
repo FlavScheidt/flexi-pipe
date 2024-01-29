@@ -1,0 +1,22 @@
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-6994b53c-c2bf-4e10-b3cd-c80fe02b78b0.json
+# GMT Mon Jan 15 15:50:52 2024
+# 
+d dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead totalBandwidth messageBandwidth
+messageReceived
+graft messageReceived prune totalBandwidth
+prune messageReceived totalBandwidth
+iwant graft prune propagationTime totalBandwidth
+dlo d messageReceived dhi dscore dlazy ihave dout gossipFactor interval topology messageOverhead totalBandwidth messageBandwidth
+dhi messageReceived prune dscore dlazy ihave dout gossipFactor interval topology totalBandwidth messageBandwidth
+dscore messageReceived topology totalBandwidth
+dlazy messageReceived dscore ihave dout topology propagationTime messageBandwidth
+ihave messageReceived graft prune iwant dscore topology totalBandwidth messageBandwidth
+dout messageReceived dscore ihave topology totalBandwidth messageBandwidth
+gossipFactor dscore dlazy ihave dout interval topology messageBandwidth
+interval iwant dscore dlazy ihave dout gossipFactor topology totalBandwidth messageBandwidth
+topology messageReceived graft dscore ihave totalBandwidth
+propagationTime prune
+messageOverhead d messageReceived graft dhi dscore ihave dout gossipFactor interval topology totalBandwidth messageBandwidth
+totalBandwidth messageReceived
+gossipBandwidth d messageReceived graft iwant dscore dlazy ihave gossipFactor interval topology propagationTime messageOverhead totalBandwidth messageBandwidth
+messageBandwidth messageReceived iwant dscore ihave topology totalBandwidth
