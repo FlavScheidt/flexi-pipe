@@ -1,22 +1,22 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-ad1678ea-7045-4f3c-b20b-08e98af96aa6.json
-# GMT Tue Jan 23 16:44:28 2024
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-34803544-ac25-4f88-a3a7-c791d2c58004.json
+# GMT Tue Jan 30 15:15:46 2024
 # 
-d messageReceived prune ihave propagationTime totalBandwidth messageBandwidth
-messageReceived totalBandwidth gossipBandwidth messageBandwidth
-graft iwant ihave messageOverhead gossipBandwidth messageBandwidth
-prune graft iwant ihave gossipBandwidth
-iwant ihave messageOverhead messageBandwidth
-dlo ihave propagationTime messageBandwidth
-dhi prune propagationTime messageOverhead totalBandwidth messageBandwidth
+d graft prune iwant ihave propagationTime messageOverhead totalBandwidth gossipBandwidth
+messageReceived propagationTime messageOverhead totalBandwidth messageBandwidth
+graft iwant propagationTime gossipBandwidth messageBandwidth
+prune graft ihave
+iwant ihave propagationTime
+dlo prune ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+dhi ihave propagationTime messageOverhead totalBandwidth
 dscore ihave propagationTime totalBandwidth gossipBandwidth
-dlazy propagationTime messageOverhead totalBandwidth messageBandwidth
-ihave propagationTime gossipBandwidth messageBandwidth
-dout messageReceived ihave propagationTime messageBandwidth
-gossipFactor propagationTime messageOverhead totalBandwidth gossipBandwidth
-interval ihave totalBandwidth gossipBandwidth
-topology ihave propagationTime totalBandwidth gossipBandwidth messageBandwidth
-propagationTime messageBandwidth
-messageOverhead messageReceived totalBandwidth gossipBandwidth messageBandwidth
-totalBandwidth iwant propagationTime gossipBandwidth messageBandwidth
-gossipBandwidth
-messageBandwidth
+dlazy propagationTime messageOverhead gossipBandwidth messageBandwidth
+ihave
+dout prune ihave messageOverhead gossipBandwidth
+gossipFactor iwant gossipBandwidth messageBandwidth
+interval messageReceived messageOverhead totalBandwidth messageBandwidth
+topology messageReceived ihave propagationTime totalBandwidth gossipBandwidth
+propagationTime
+messageOverhead propagationTime totalBandwidth
+totalBandwidth gossipBandwidth
+gossipBandwidth propagationTime
+messageBandwidth ihave propagationTime totalBandwidth
