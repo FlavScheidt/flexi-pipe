@@ -1,0 +1,104 @@
+Type: Manual
+Granularity: 10s
+Treatment: diff
+Mechanisms: auto
+
+Evaluated the performance of the causal mechanisms and the invertibility assumption of the causal mechanisms and the overall average KL divergence between generated and observed distribution and the graph structure. The results are as follows:
+
+==== Evaluation of Causal Mechanisms ====
+The used evaluation metrics are:
+- KL divergence (only for root-nodes): Evaluates the divergence between the generated and the observed distribution.
+- Mean Squared Error (MSE): Evaluates the average squared differences between the observed values and the conditional expectation of the causal mechanisms.
+- Normalized MSE (NMSE): The MSE normalized by the standard deviation for better comparison.
+- R2 coefficient: Indicates how much variance is explained by the conditional expectations of the mechanisms. Note, however, that this can be misleading for nonlinear relationships.
+- F1 score (only for categorical non-root nodes): The harmonic mean of the precision and recall indicating the goodness of the underlying classifier model.
+- (normalized) Continuous Ranked Probability Score (CRPS): The CRPS generalizes the Mean Absolute Percentage Error to probabilistic predictions. This gives insights into the accuracy and calibration of the causal mechanisms.
+NOTE: Every metric focuses on different aspects and they might not consistently indicate a good or bad performance.
+We will mostly utilize the CRPS for comparing and interpreting the performance of the mechanisms, since this captures the most important properties for the causal model.
+
+--- Node d
+- The KL divergence between generated and observed distribution is 6.1715693161742795.
+The estimated KL divergence indicates a significant mismatches between the distributions. Consider using models that better fit the distribution. However, also note that regardless of the model choice, intrinsically weak connections or very small signal to noise ratios will always lead to a poor fit.
+
+--- Node dlo
+- The KL divergence between generated and observed distribution is 7.146745750722177.
+The estimated KL divergence indicates a significant mismatches between the distributions. Consider using models that better fit the distribution. However, also note that regardless of the model choice, intrinsically weak connections or very small signal to noise ratios will always lead to a poor fit.
+
+--- Node dhi
+- The KL divergence between generated and observed distribution is 5.308719292256659.
+The estimated KL divergence indicates a significant mismatches between the distributions. Consider using models that better fit the distribution. However, also note that regardless of the model choice, intrinsically weak connections or very small signal to noise ratios will always lead to a poor fit.
+
+--- Node dout
+- The KL divergence between generated and observed distribution is 5.963131843040506.
+The estimated KL divergence indicates a significant mismatches between the distributions. Consider using models that better fit the distribution. However, also note that regardless of the model choice, intrinsically weak connections or very small signal to noise ratios will always lead to a poor fit.
+
+--- Node interval
+- The KL divergence between generated and observed distribution is 2.8984375151114827.
+The estimated KL divergence indicates some significant mismatches between the distributions.
+
+--- Node topology
+- The KL divergence between generated and observed distribution is 1.5649691382053714.
+The estimated KL divergence indicates some significant mismatches between the distributions.
+
+--- Node prune
+- The MSE is 712.893445243805.
+- The NMSE is 1.000322622669763.
+- The R2 coefficient is -0.0006577201387905518.
+- The normalized CRPS is 0.10938012127368205.
+The estimated CRPS indicates a very good model performance.
+
+--- Node graft
+- The MSE is 19577.16774580336.
+- The NMSE is 0.9453067730605712.
+- The R2 coefficient is 0.10618067895543022.
+- The normalized CRPS is 0.10182333366737.
+The estimated CRPS indicates a very good model performance.
+
+--- Node messageReceived
+- The MSE is 67204.77665867307.
+- The NMSE is 0.87975333315731.
+- The R2 coefficient is 0.22332253159927234.
+- The normalized CRPS is 0.3933321184267569.
+The estimated CRPS indicates only a fair model performance. Note, however, that a high CRPS could also result from a small signal to noise ratio.
+
+--- Node messageOverhead
+- The MSE is 1006893.604516387.
+- The NMSE is 0.3851759527250467.
+- The R2 coefficient is 0.850906078618622.
+- The normalized CRPS is 0.14482313577588973.
+The estimated CRPS indicates a very good model performance.
+
+==== Evaluation of Invertible Functional Causal Model Assumption ====
+
+--- The model assumption for node messageReceived is not rejected with a p-value of 1.0 (after potential adjustment) and a significance level of 0.05.
+This implies that the model assumption might be valid.
+
+--- The model assumption for node graft is rejected with a p-value of 3.289690163033043e-05 (after potential adjustment) and a significance level of 0.05.
+This implies that the model assumption might not be valid. This is, the relationship cannot be represent with this type of mechanism or there is a hidden confounder between the node and its parents.
+
+--- The model assumption for node prune is not rejected with a p-value of 1.0 (after potential adjustment) and a significance level of 0.05.
+This implies that the model assumption might be valid.
+
+--- The model assumption for node messageOverhead is rejected with a p-value of 2.892660777575884e-08 (after potential adjustment) and a significance level of 0.05.
+This implies that the model assumption might not be valid. This is, the relationship cannot be represent with this type of mechanism or there is a hidden confounder between the node and its parents.
+
+Note that these results are based on statistical independence tests, and the fact that the assumption was not rejected does not necessarily imply that it is correct. There is just no evidence against it.
+
+==== Evaluation of Generated Distribution ====
+The overall average KL divergence between the generated and observed distribution is 1.513127544825329
+The estimated KL divergence indicates some significant mismatches between the distributions.
+
+==== Evaluation of the Causal Graph Structure ====
++-------------------------------------------------------------------------------------------------------+
+|                                         Falsificaton Summary                                          |
++-------------------------------------------------------------------------------------------------------+
+| The given DAG is informative because 0 / 50 of the permutations lie in the Markov                     |
+| equivalence class of the given DAG (p-value: 0.00).                                                   |
+| The given DAG violates 14/52 LMCs and is better than 8.0% of the permuted DAGs (p-value: 0.92).       |
+| Based on the provided significance level (0.2) and because the DAG is informative,                    |
+| we reject the DAG.                                                                                    |
++-------------------------------------------------------------------------------------------------------+
+
+==== NOTE ====
+Always double check the made model assumptions with respect to the graph structure and choice of causal mechanisms.
+All these evaluations give some insight into the goodness of the causal model, but should not be overinterpreted, since some causal relationships can be intrinsically hard to model. Furthermore, many algorithms are fairly robust against misspecifications or poor performances of causal mechanisms.

@@ -1,0 +1,17 @@
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-c5fa987d-6978-48d4-9954-02aedd301c14.json
+# GMT Thu Feb  1 17:37:10 2024
+# 
+d dscore dlazy dout
+messageReceived iwant ihave messageOverhead
+graft d messageReceived prune iwant dlo ihave dout
+prune d dout messageOverhead
+iwant messageReceived prune ihave messageOverhead
+dlo d graft dhi dscore dlazy dout gossipFactor
+dhi d prune dscore dlazy dout gossipFactor
+dscore
+dlazy dscore
+ihave d messageReceived graft prune iwant
+dout dlazy messageOverhead
+gossipFactor d dhi dscore dlazy dout
+interval dhi dscore dlazy dout gossipFactor
+messageOverhead

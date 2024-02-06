@@ -1,0 +1,13 @@
+#/home/flav/anaconda3/envs/DECI/lib/python3.10/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-aa53d72c-b033-4610-a857-e55a37b10a97.json
+# GMT Mon Feb  5 14:32:58 2024
+# 
+d dlo dhi topology
+messageReceived graft messageOverhead
+graft messageReceived prune dlo dout topology
+prune graft dlo dhi dout messageOverhead
+dlo dhi topology
+dhi topology
+dout d dlo dhi messageOverhead
+interval d dlo dhi dout topology
+messageOverhead
+topology
