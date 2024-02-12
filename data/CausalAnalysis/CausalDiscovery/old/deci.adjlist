@@ -1,0 +1,22 @@
+#/home/flav/anaconda3/envs/DECI/lib/python3.10/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-efb17b5c-27a5-40df-975e-9561047d093a.json
+# GMT Wed Jan 17 15:46:26 2024
+# 
+d messageReceived dlo ihave propagationTime messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+messageReceived
+graft messageReceived dscore propagationTime messageOverhead totalBandwidth gossipBandwidth messageBandwidth
+prune messageReceived graft iwant dscore dlazy ihave topology propagationTime messageBandwidth
+iwant messageReceived dlo dhi messageOverhead totalBandwidth messageBandwidth
+dlo ihave propagationTime messageOverhead totalBandwidth messageBandwidth
+dhi d dlo dlazy ihave propagationTime messageOverhead totalBandwidth messageBandwidth
+dscore d iwant dhi dlazy ihave propagationTime messageOverhead totalBandwidth messageBandwidth
+dlazy messageReceived ihave propagationTime messageOverhead totalBandwidth messageBandwidth
+ihave
+dout d messageReceived dlo dscore dlazy ihave messageOverhead totalBandwidth messageBandwidth
+gossipFactor d graft dhi dscore dout topology propagationTime totalBandwidth gossipBandwidth messageBandwidth
+interval d messageReceived dlo dhi dlazy gossipFactor propagationTime messageOverhead gossipBandwidth messageBandwidth
+topology d dlazy propagationTime totalBandwidth
+propagationTime messageReceived ihave
+messageOverhead ihave propagationTime
+totalBandwidth ihave propagationTime messageOverhead
+gossipBandwidth ihave propagationTime messageOverhead totalBandwidth
+messageBandwidth ihave propagationTime messageOverhead gossipBandwidth

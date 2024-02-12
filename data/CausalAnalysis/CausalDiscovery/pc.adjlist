@@ -1,22 +1,13 @@
-#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-3a5a855c-8bea-448b-85a9-b111b20b1687.json
-# GMT Wed Jan 17 10:04:28 2024
+#/home/flav/anaconda3/lib/python3.11/site-packages/ipykernel_launcher.py -f /home/flav/.local/share/jupyter/runtime/kernel-c5fa987d-6978-48d4-9954-02aedd301c14.json
+# GMT Mon Feb  5 14:04:49 2024
 # 
-d messageReceived ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
-messageReceived ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
-graft prune iwant ihave gossipBandwidth
-prune iwant ihave propagationTime
-iwant ihave propagationTime
-dlo prune ihave propagationTime messageOverhead messageBandwidth
-dhi messageReceived graft prune ihave propagationTime messageOverhead totalBandwidth messageBandwidth
-dscore ihave messageOverhead messageBandwidth
-dlazy ihave propagationTime messageOverhead totalBandwidth messageBandwidth
-ihave
-dout ihave messageBandwidth
-gossipFactor ihave messageOverhead totalBandwidth messageBandwidth
-interval ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
-topology graft iwant ihave messageOverhead totalBandwidth gossipBandwidth messageBandwidth
-propagationTime
-messageOverhead totalBandwidth gossipBandwidth messageBandwidth
-totalBandwidth
-gossipBandwidth ihave propagationTime totalBandwidth
-messageBandwidth iwant ihave totalBandwidth gossipBandwidth
+d messageReceived prune
+messageReceived
+graft messageReceived prune
+prune
+dlo graft
+dhi prune
+dout graft prune
+interval
+messageOverhead messageReceived
+topology graft
